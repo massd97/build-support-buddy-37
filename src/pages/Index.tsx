@@ -1,19 +1,24 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+/**
+ * Index Page Component
+ * 
+ * This is the main page of the application that integrates all the core functionalities:
+ * - Site registration and management
+ * - Transaction handling
+ * - Map visualization
+ * - Search capabilities
+ * 
+ * The component is structured to be maintainable and scalable, with clear separation
+ * of concerns between different functional areas.
+ */
 import { useState, useCallback, useRef } from "react";
+import { toast } from "sonner";
 import SiteRegistrationModal from "@/components/SiteRegistrationModal";
 import TransactionRegistrationModal from "@/components/TransactionRegistrationModal";
 import AvailableSitesList from "@/components/AvailableSitesList";
 import TransactionFeed from "@/components/TransactionFeed";
-import { toast } from "sonner";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ChevronDown, List } from "lucide-react";
+import MapSearch from "@/components/MapSearch";
+import ActionButtons from "@/components/ActionButtons";
+import MapComponent from "@/components/MapComponent";
 
 interface Site {
   id: string;
@@ -44,27 +49,18 @@ const Index = () => {
   // Reference to the map instance
   const mapRef = useRef<google.maps.Map | null>(null);
 
-  // Custom map styles to make it look better
-  const mapStyles = [
-    {
-      featureType: "all",
-      elementType: "labels.text.fill",
-      stylers: [{ color: "#7c93a3" }],
-    },
-    {
-      featureType: "water",
-      elementType: "geometry.fill",
-      stylers: [{ color: "#e1e9ef" }],
-    },
-    // ... more styling can be added here
-  ];
-
-  // Function to handle map load
+  /**
+   * Handles the map load event and stores the map reference
+   * @param {google.maps.Map} map - The Google Maps instance
+   */
   const onMapLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
   }, []);
 
-  // Function to handle map search
+  /**
+   * Handles the map search functionality
+   * Uses Google Geocoding service to find locations
+   */
   const handleMapSearch = useCallback(async () => {
     if (!mapSearch) return;
 
@@ -85,7 +81,11 @@ const Index = () => {
     }
   }, [mapSearch]);
 
-  // Function to handle marker click
+  /**
+   * Handles marker click events on the map
+   * Shows site information and centers the map on the clicked location
+   * @param {Site} site - The site object associated with the clicked marker
+   */
   const handleMarkerClick = (site: Site) => {
     setMapCenter({ lat: site.lat, lng: site.lng });
     setZoom(15);
@@ -94,91 +94,26 @@ const Index = () => {
 
   return (
     <div className="min-h-screen p-4">
-      {/* Registration buttons and Lists dropdown */}
-      <div className="flex flex-col sm:flex-row items-center gap-4 mb-6">
-        {/* Registration buttons */}
-        <div className="flex gap-4 flex-wrap justify-center">
-          <Button 
-            onClick={() => setShowSiteModal(true)}
-            className="text-lg"
-          >
-            現場新規登録
-          </Button>
-          <Button 
-            onClick={() => setShowTransactionModal(true)}
-            className="text-lg"
-          >
-            取引新規登録
-          </Button>
-        </div>
+      <ActionButtons
+        setShowSiteModal={setShowSiteModal}
+        setShowTransactionModal={setShowTransactionModal}
+        setShowSitesList={setShowSitesList}
+        setShowTransactionFeed={setShowTransactionFeed}
+      />
 
-        {/* Lists dropdown - centers on small screens */}
-        <div className="w-full sm:w-auto flex justify-center">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2">
-                <List className="h-4 w-4" />
-                リスト表示
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={() => setShowSitesList(true)}>
-                使用可能現場一覧
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setShowTransactionFeed(true)}>
-                トランザクションフィード
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
+      <MapSearch
+        mapSearch={mapSearch}
+        setMapSearch={setMapSearch}
+        handleMapSearch={handleMapSearch}
+      />
 
-      {/* Search bar */}
-      <div className="mb-6 flex flex-col sm:flex-row gap-2 sm:gap-0 items-center max-w-xl mx-auto">
-        <Input
-          type="text"
-          placeholder="地図を検索 (住所、現場名、担当者名、土地の量、土質)"
-          value={mapSearch}
-          onChange={(e) => setMapSearch(e.target.value)}
-          className="w-full sm:rounded-r-none"
-          onKeyDown={(e) => e.key === 'Enter' && handleMapSearch()}
-        />
-        <Button 
-          onClick={handleMapSearch}
-          className="w-full sm:w-auto sm:rounded-l-none"
-        >
-          検索
-        </Button>
-      </div>
-
-      {/* Map container and Modals */}
-      <div className="w-full h-[500px] mb-6 rounded-lg overflow-hidden shadow-lg">
-        <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
-          <GoogleMap
-            mapContainerClassName="w-full h-full"
-            center={mapCenter}
-            zoom={zoom}
-            onLoad={onMapLoad}
-            options={{
-              styles: mapStyles,
-              streetViewControl: false,
-              mapTypeControl: false,
-              fullscreenControl: true,
-              zoomControl: true,
-            }}
-          >
-            {sites.map((site) => (
-              <Marker
-                key={site.id}
-                position={{ lat: site.lat, lng: site.lng }}
-                onClick={() => handleMarkerClick(site)}
-                title={site.name}
-              />
-            ))}
-          </GoogleMap>
-        </LoadScript>
-      </div>
+      <MapComponent
+        mapCenter={mapCenter}
+        zoom={zoom}
+        sites={sites}
+        onMapLoad={onMapLoad}
+        handleMarkerClick={handleMarkerClick}
+      />
 
       {/* Modals */}
       <SiteRegistrationModal 
