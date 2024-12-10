@@ -39,8 +39,12 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
             <Input id="soilType" />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="period">期間</Label>
-            <Input id="period" type="date" />
+            <Label>期間</Label>
+            <div className="flex gap-2 items-center">
+              <Input type="date" id="startDate" className="flex-1" />
+              <span className="text-sm">～</span>
+              <Input type="date" id="endDate" className="flex-1" />
+            </div>
           </div>
           <div className="grid gap-2">
             <Label htmlFor="contact">担当者連絡先</Label>
