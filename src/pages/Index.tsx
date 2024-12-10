@@ -94,6 +94,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen p-4">
+      {/* Registration buttons and Lists dropdown */}
       <div className="flex flex-col sm:flex-row items-center gap-4 mb-6">
         {/* Registration buttons */}
         <div className="flex gap-4 flex-wrap justify-center">
@@ -134,25 +135,24 @@ const Index = () => {
       </div>
 
       {/* Search bar */}
-      <div className="mb-6 relative">
+      <div className="mb-6 flex flex-col sm:flex-row gap-2 sm:gap-0 items-center max-w-xl mx-auto">
         <Input
           type="text"
           placeholder="地図を検索 (住所、現場名、担当者名、土地の量、土質)"
           value={mapSearch}
           onChange={(e) => setMapSearch(e.target.value)}
-          className="w-full max-w-xl mx-auto pr-24"
+          className="w-full sm:rounded-r-none"
           onKeyDown={(e) => e.key === 'Enter' && handleMapSearch()}
         />
         <Button 
           onClick={handleMapSearch}
-          className="absolute right-0 top-0 rounded-l-none"
-          style={{ right: "calc(50% - 16rem)" }}
+          className="w-full sm:w-auto sm:rounded-l-none"
         >
           検索
         </Button>
       </div>
 
-      {/* Map container */}
+      {/* Map container and Modals */}
       <div className="w-full h-[500px] mb-6 rounded-lg overflow-hidden shadow-lg">
         <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
           <GoogleMap
