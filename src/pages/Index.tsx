@@ -94,9 +94,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen p-4">
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row items-center gap-4 mb-6">
         {/* Registration buttons */}
-        <div className="flex gap-4">
+        <div className="flex gap-4 flex-wrap justify-center">
           <Button 
             onClick={() => setShowSiteModal(true)}
             className="text-lg"
@@ -111,24 +111,26 @@ const Index = () => {
           </Button>
         </div>
 
-        {/* Lists dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="gap-2">
-              <List className="h-4 w-4" />
-              リスト表示
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem onClick={() => setShowSitesList(true)}>
-              使用可能現場一覧
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setShowTransactionFeed(true)}>
-              トランザクションフィード
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {/* Lists dropdown - centers on small screens */}
+        <div className="w-full sm:w-auto flex justify-center">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <List className="h-4 w-4" />
+                リスト表示
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => setShowSitesList(true)}>
+                使用可能現場一覧
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setShowTransactionFeed(true)}>
+                トランザクションフィード
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {/* Search bar */}
