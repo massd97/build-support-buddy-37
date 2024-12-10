@@ -7,8 +7,14 @@ import TransactionRegistrationModal from "@/components/TransactionRegistrationMo
 import AvailableSitesList from "@/components/AvailableSitesList";
 import TransactionFeed from "@/components/TransactionFeed";
 import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown, List } from "lucide-react";
 
-// Define the type for our site data
 interface Site {
   id: string;
   name: string;
@@ -88,36 +94,44 @@ const Index = () => {
 
   return (
     <div className="min-h-screen p-4">
-      <div className="flex justify-between mb-6">
-        <Button 
-          onClick={() => setShowSiteModal(true)}
-          className="text-lg"
-        >
-          現場新規登録
-        </Button>
-        <Button 
-          onClick={() => setShowTransactionModal(true)}
-          className="text-lg"
-        >
-          取引新規登録
-        </Button>
+      <div className="flex items-center gap-4 mb-6">
+        {/* Registration buttons */}
+        <div className="flex gap-4">
+          <Button 
+            onClick={() => setShowSiteModal(true)}
+            className="text-lg"
+          >
+            現場新規登録
+          </Button>
+          <Button 
+            onClick={() => setShowTransactionModal(true)}
+            className="text-lg"
+          >
+            取引新規登録
+          </Button>
+        </div>
+
+        {/* Lists dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="gap-2">
+              <List className="h-4 w-4" />
+              リスト表示
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem onClick={() => setShowSitesList(true)}>
+              使用可能現場一覧
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setShowTransactionFeed(true)}>
+              トランザクションフィード
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
-      <div className="flex justify-center gap-4 mb-6">
-        <Button 
-          onClick={() => setShowSitesList(true)}
-          className="text-lg"
-        >
-          使用可能現場一覧
-        </Button>
-        <Button 
-          onClick={() => setShowTransactionFeed(true)}
-          className="text-lg"
-        >
-          トランザクションフィード
-        </Button>
-      </div>
-
+      {/* Search bar */}
       <div className="mb-6 relative">
         <Input
           type="text"
@@ -136,6 +150,7 @@ const Index = () => {
         </Button>
       </div>
 
+      {/* Map container */}
       <div className="w-full h-[500px] mb-6 rounded-lg overflow-hidden shadow-lg">
         <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
           <GoogleMap
@@ -163,6 +178,7 @@ const Index = () => {
         </LoadScript>
       </div>
 
+      {/* Modals */}
       <SiteRegistrationModal 
         open={showSiteModal} 
         onOpenChange={setShowSiteModal}
