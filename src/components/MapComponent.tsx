@@ -8,6 +8,9 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon, LatLngExpression } from 'leaflet';
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import TransactionRegistrationModal from './TransactionRegistrationModal';
 
 // Fix for default marker icon in Leaflet
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -52,46 +55,66 @@ const defaultIcon = new Icon({
 });
 
 const MapComponent = () => {
+  const [showTransactionModal, setShowTransactionModal] = useState(false);
+  const [selectedSite, setSelectedSite] = useState<typeof sampleSites[0] | null>(null);
+  
   // Center map on Tokyo
   const defaultCenter: LatLngExpression = [35.6762, 139.6503];
   
   return (
-    <div className="w-full h-[500px] mb-6 rounded-lg overflow-hidden shadow-lg">
-      <MapContainer 
-        center={defaultCenter}
-        zoom={11} 
-        style={{ height: '100%', width: '100%' }}
-        scrollWheelZoom={false}
-      >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        />
-        {sampleSites.map((site) => (
-          <Marker
-            key={site.id}
-            position={[site.lat, site.lng] as LatLngExpression}
-            icon={defaultIcon}
-            eventHandlers={{
-              click: () => {
-                toast.info(`${site.name} - ${site.address}`);
-              },
-            }}
-          >
-            <Popup>
-              <div className="p-2">
-                <h3 className="font-bold text-lg mb-2">{site.name}</h3>
-                <p><span className="font-semibold">住所:</span> {site.address}</p>
-                <p><span className="font-semibold">残土の量:</span> {site.soilAmount}</p>
-                <p><span className="font-semibold">土質:</span> {site.soilType}</p>
-                <p><span className="font-semibold">担当者:</span> {site.contactPerson}</p>
-                <p><span className="font-semibold">連絡先:</span> {site.phone}</p>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
-      </MapContainer>
-    </div>
+    <>
+      <div className="w-full h-[500px] mb-6 rounded-lg overflow-hidden shadow-lg relative">
+        <MapContainer 
+          center={defaultCenter}
+          zoom={11} 
+          style={{ height: '100%', width: '100%' }}
+          scrollWheelZoom={false}
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          />
+          {sampleSites.map((site) => (
+            <Marker
+              key={site.id}
+              position={[site.lat, site.lng] as LatLngExpression}
+              icon={defaultIcon}
+              eventHandlers={{
+                click: () => {
+                  toast.info(`${site.name} - ${site.address}`);
+                },
+              }}
+            >
+              <Popup className="w-64">
+                <div className="p-2">
+                  <h3 className="font-bold text-lg mb-2">{site.name}</h3>
+                  <p><span className="font-semibold">住所:</span> {site.address}</p>
+                  <p><span className="font-semibold">残土の量:</span> {site.soilAmount}</p>
+                  <p><span className="font-semibold">土質:</span> {site.soilType}</p>
+                  <p><span className="font-semibold">担当者:</span> {site.contactPerson}</p>
+                  <p><span className="font-semibold">連絡先:</span> {site.phone}</p>
+                  <Button 
+                    className="w-full mt-4"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedSite(site);
+                      setShowTransactionModal(true);
+                    }}
+                  >
+                    取引を申請
+                  </Button>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+        </MapContainer>
+      </div>
+
+      <TransactionRegistrationModal 
+        open={showTransactionModal}
+        onOpenChange={setShowTransactionModal}
+      />
+    </>
   );
 };
 
