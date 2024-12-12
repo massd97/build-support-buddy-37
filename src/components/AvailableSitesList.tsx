@@ -70,7 +70,7 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[800px]">
+        <DialogContent className="sm:max-w-[800px] [&_*]:!z-[1000]">
           <DialogHeader>
             <DialogTitle>使用可能現場一覧</DialogTitle>
             <DialogDescription>
