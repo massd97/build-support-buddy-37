@@ -75,7 +75,7 @@ const MapComponent = () => {
   
   return (
     <>
-      <div className="w-full h-[500px] mb-6 rounded-lg overflow-hidden shadow-lg relative">
+      <div className="w-full h-[700px] lg:h-[800px] mb-6 rounded-lg overflow-hidden shadow-lg relative">
         <MapContainer 
           center={defaultCenter}
           zoom={11} 
