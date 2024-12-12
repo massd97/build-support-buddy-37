@@ -67,10 +67,20 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
     setSelectedSite(null);
   };
 
+  const handleMainDialogClose = (open: boolean) => {
+    if (!open) {
+      setSearch("");
+      setSelectedSite(null);
+      setShowDetails(false);
+      setShowTransactionModal(false);
+    }
+    onOpenChange(open);
+  };
+
   return (
     <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[800px] [&_*]:!z-[1000]">
+      <Dialog open={open} onOpenChange={handleMainDialogClose}>
+        <DialogContent className="sm:max-w-[800px]">
           <DialogHeader>
             <DialogTitle>使用可能現場一覧</DialogTitle>
             <DialogDescription>
@@ -117,11 +127,13 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
         </DialogContent>
       </Dialog>
 
-      {/* Details Dialog */}
       <Dialog open={showDetails} onOpenChange={handleCloseDetails}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>現場詳細情報</DialogTitle>
+            <DialogDescription>
+              現場の詳細情報を確認できます
+            </DialogDescription>
           </DialogHeader>
           {selectedSite && (
             <div className="p-4 space-y-4">
@@ -150,10 +162,14 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
         </DialogContent>
       </Dialog>
 
-      {/* Transaction Modal */}
       <TransactionRegistrationModal 
         open={showTransactionModal}
-        onOpenChange={setShowTransactionModal}
+        onOpenChange={(open) => {
+          setShowTransactionModal(open);
+          if (!open) {
+            handleMainDialogClose(false);
+          }
+        }}
       />
     </>
   );
