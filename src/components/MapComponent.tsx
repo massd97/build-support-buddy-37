@@ -69,6 +69,7 @@ const MapComponent = () => {
           zoom={11} 
           style={{ height: '100%', width: '100%' }}
           scrollWheelZoom={false}
+          className="z-0"
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -85,7 +86,7 @@ const MapComponent = () => {
                 },
               }}
             >
-              <Popup className="w-64">
+              <Popup className="w-64 [&>*]:!z-[1000]">
                 <div className="p-2">
                   <h3 className="font-bold text-lg mb-2">{site.name}</h3>
                   <p><span className="font-semibold">住所:</span> {site.address}</p>
