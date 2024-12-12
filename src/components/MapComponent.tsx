@@ -57,10 +57,11 @@ const MapComponent = () => {
   
   return (
     <div className="w-full h-[500px] mb-6 rounded-lg overflow-hidden shadow-lg">
-      <MapContainer
-        center={[defaultCenter.lat, defaultCenter.lng]}
-        zoom={11}
+      <MapContainer 
+        center={[defaultCenter.lat, defaultCenter.lng]} 
+        zoom={11} 
         style={{ height: '100%', width: '100%' }}
+        scrollWheelZoom={false}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
