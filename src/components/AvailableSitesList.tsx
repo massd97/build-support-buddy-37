@@ -6,24 +6,17 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import TransactionRegistrationModal from "./TransactionRegistrationModal";
+import SitesTable from "./SitesTable";
+import SiteDetailsDialog from "./SiteDetailsDialog";
 
 interface AvailableSitesListProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-// Sample data for testing - same structure as map data
+// Sample data for testing
 const sampleSites = [
   {
     id: "1",
@@ -57,15 +50,10 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
 
   // Filter sites based on search input
   const filteredSites = sampleSites.filter(site => 
-    site.name.includes(search) ||
-    site.address.includes(search) ||
-    site.contactPerson.includes(search)
+    site.name.toLowerCase().includes(search.toLowerCase()) ||
+    site.address.toLowerCase().includes(search.toLowerCase()) ||
+    site.contactPerson.toLowerCase().includes(search.toLowerCase())
   );
-
-  const handleCloseDetails = () => {
-    setShowDetails(false);
-    setSelectedSite(null);
-  };
 
   const handleMainDialogClose = (open: boolean) => {
     if (!open) {
@@ -77,10 +65,20 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
     onOpenChange(open);
   };
 
+  const handleSiteClick = (site: typeof sampleSites[0]) => {
+    setSelectedSite(site);
+    setShowDetails(true);
+  };
+
+  const handleTransactionClick = () => {
+    setShowTransactionModal(true);
+    setShowDetails(false);
+  };
+
   return (
     <>
       <Dialog open={open} onOpenChange={handleMainDialogClose}>
-        <DialogContent className="sm:max-w-[800px]">
+        <DialogContent className="sm:max-w-[800px] [&>*]:!z-[1000]">
           <DialogHeader>
             <DialogTitle>使用可能現場一覧</DialogTitle>
             <DialogDescription>
@@ -94,73 +92,20 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
               onChange={(e) => setSearch(e.target.value)}
               className="mb-4"
             />
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>現場名</TableHead>
-                  <TableHead>住所</TableHead>
-                  <TableHead>担当者</TableHead>
-                  <TableHead>残土の量</TableHead>
-                  <TableHead>土質</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredSites.map((site) => (
-                  <TableRow
-                    key={site.id}
-                    className="cursor-pointer hover:bg-gray-100"
-                    onClick={() => {
-                      setSelectedSite(site);
-                      setShowDetails(true);
-                    }}
-                  >
-                    <TableCell>{site.name}</TableCell>
-                    <TableCell>{site.address}</TableCell>
-                    <TableCell>{site.contactPerson}</TableCell>
-                    <TableCell>{site.soilAmount}</TableCell>
-                    <TableCell>{site.soilType}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <SitesTable 
+              sites={filteredSites}
+              onSiteClick={handleSiteClick}
+            />
           </div>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showDetails} onOpenChange={handleCloseDetails}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>現場詳細情報</DialogTitle>
-            <DialogDescription>
-              現場の詳細情報を確認できます
-            </DialogDescription>
-          </DialogHeader>
-          {selectedSite && (
-            <div className="p-4 space-y-4">
-              <div>
-                <h3 className="font-bold text-lg mb-2">{selectedSite.name}</h3>
-                <div className="space-y-2">
-                  <p><span className="font-semibold">住所:</span> {selectedSite.address}</p>
-                  <p><span className="font-semibold">残土の量:</span> {selectedSite.soilAmount}</p>
-                  <p><span className="font-semibold">土質:</span> {selectedSite.soilType}</p>
-                  <p><span className="font-semibold">担当者:</span> {selectedSite.contactPerson}</p>
-                  <p><span className="font-semibold">連絡先:</span> {selectedSite.phone}</p>
-                  <p><span className="font-semibold">位置情報:</span> {selectedSite.lat}, {selectedSite.lng}</p>
-                </div>
-                <Button 
-                  className="w-full mt-4"
-                  onClick={() => {
-                    setShowTransactionModal(true);
-                    setShowDetails(false);
-                  }}
-                >
-                  取引を申請
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <SiteDetailsDialog
+        site={selectedSite}
+        open={showDetails}
+        onOpenChange={setShowDetails}
+        onTransactionClick={handleTransactionClick}
+      />
 
       <TransactionRegistrationModal 
         open={showTransactionModal}
