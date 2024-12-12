@@ -46,6 +46,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen p-4">
+      {/* App Name */}
+      <h1 className="text-2xl font-bold text-center mb-6 text-primary">
+        SoilSync
+      </h1>
+
       <ActionButtons
         setShowSiteModal={setShowSiteModal}
         setShowTransactionModal={setShowTransactionModal}

@@ -45,7 +45,7 @@ const ActionButtons = ({
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="gap-2">
               <List className="h-4 w-4" />
-              リスト表示
+              一覧表示
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
