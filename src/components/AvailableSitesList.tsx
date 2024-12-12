@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Table,
@@ -13,7 +14,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import TransactionRegistrationModal from "./TransactionRegistrationModal";
 
 interface AvailableSitesListProps {
   open: boolean;
@@ -50,6 +53,7 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
   const [search, setSearch] = useState("");
   const [selectedSite, setSelectedSite] = useState<typeof sampleSites[0] | null>(null);
   const [showDetails, setShowDetails] = useState(false);
+  const [showTransactionModal, setShowTransactionModal] = useState(false);
 
   // Filter sites based on search input
   const filteredSites = sampleSites.filter(site => 
@@ -58,12 +62,20 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
     site.contactPerson.includes(search)
   );
 
+  const handleCloseDetails = () => {
+    setShowDetails(false);
+    setSelectedSite(null);
+  };
+
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-[800px]">
           <DialogHeader>
             <DialogTitle>使用可能現場一覧</DialogTitle>
+            <DialogDescription>
+              現場を選択して詳細を確認できます
+            </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <Input
@@ -106,7 +118,7 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
       </Dialog>
 
       {/* Details Dialog */}
-      <Dialog open={showDetails} onOpenChange={setShowDetails}>
+      <Dialog open={showDetails} onOpenChange={handleCloseDetails}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>現場詳細情報</DialogTitle>
@@ -123,11 +135,26 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
                   <p><span className="font-semibold">連絡先:</span> {selectedSite.phone}</p>
                   <p><span className="font-semibold">位置情報:</span> {selectedSite.lat}, {selectedSite.lng}</p>
                 </div>
+                <Button 
+                  className="w-full mt-4"
+                  onClick={() => {
+                    setShowTransactionModal(true);
+                    setShowDetails(false);
+                  }}
+                >
+                  取引を申請
+                </Button>
               </div>
             </div>
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Transaction Modal */}
+      <TransactionRegistrationModal 
+        open={showTransactionModal}
+        onOpenChange={setShowTransactionModal}
+      />
     </>
   );
 };
