@@ -78,7 +78,7 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
   return (
     <>
       <Dialog open={open} onOpenChange={handleMainDialogClose}>
-        <DialogContent className="sm:max-w-[800px] [&>*]:!z-[1000]">
+        <DialogContent className="sm:max-w-[800px]">
           <DialogHeader>
             <DialogTitle>使用可能現場一覧</DialogTitle>
             <DialogDescription>
@@ -100,22 +100,26 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
         </DialogContent>
       </Dialog>
 
-      <SiteDetailsDialog
-        site={selectedSite}
-        open={showDetails}
-        onOpenChange={setShowDetails}
-        onTransactionClick={handleTransactionClick}
-      />
+      {showDetails && (
+        <SiteDetailsDialog
+          site={selectedSite}
+          open={showDetails}
+          onOpenChange={setShowDetails}
+          onTransactionClick={handleTransactionClick}
+        />
+      )}
 
-      <TransactionRegistrationModal 
-        open={showTransactionModal}
-        onOpenChange={(open) => {
-          setShowTransactionModal(open);
-          if (!open) {
-            handleMainDialogClose(false);
-          }
-        }}
-      />
+      {showTransactionModal && (
+        <TransactionRegistrationModal 
+          open={showTransactionModal}
+          onOpenChange={(open) => {
+            setShowTransactionModal(open);
+            if (!open) {
+              handleMainDialogClose(false);
+            }
+          }}
+        />
+      )}
     </>
   );
 };

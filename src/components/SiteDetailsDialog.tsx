@@ -36,7 +36,7 @@ const SiteDetailsDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] z-[60]">
         <DialogHeader>
           <DialogTitle>現場詳細情報</DialogTitle>
           <DialogDescription>
