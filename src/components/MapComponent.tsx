@@ -6,7 +6,7 @@
  */
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Icon } from 'leaflet';
+import { Icon, LatLngExpression } from 'leaflet';
 import { toast } from "sonner";
 
 // Fix for default marker icon in Leaflet
@@ -53,24 +53,24 @@ const defaultIcon = new Icon({
 
 const MapComponent = () => {
   // Center map on Tokyo
-  const defaultCenter = { lat: 35.6762, lng: 139.6503 };
+  const defaultCenter: LatLngExpression = [35.6762, 139.6503];
   
   return (
     <div className="w-full h-[500px] mb-6 rounded-lg overflow-hidden shadow-lg">
       <MapContainer 
-        center={[defaultCenter.lat, defaultCenter.lng]} 
+        center={defaultCenter}
         zoom={11} 
         style={{ height: '100%', width: '100%' }}
         scrollWheelZoom={false}
       >
         <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         {sampleSites.map((site) => (
           <Marker
             key={site.id}
-            position={[site.lat, site.lng]}
+            position={[site.lat, site.lng] as LatLngExpression}
             icon={defaultIcon}
             eventHandlers={{
               click: () => {
