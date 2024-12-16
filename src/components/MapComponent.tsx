@@ -4,7 +4,7 @@
  * This component handles the Google Maps integration, including interactive
  * markers that show site information when clicked.
  */
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { GoogleMap, LoadScript, Marker, InfoWindow } from '@react-google-maps/api';
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -56,16 +56,16 @@ const MapComponent = () => {
   };
 
   // Custom marker icons based on site type and company
-  const getMarkerOptions = (siteType: "残土" | "客土", company: keyof typeof companyColors) => ({
+  const getMarkerOptions = useCallback((map: any) => (siteType: "残土" | "客土", company: keyof typeof companyColors) => ({
     icon: {
-      path: google.maps.SymbolPath.CIRCLE,
+      path: map.SymbolPath.CIRCLE,
       fillColor: siteType === "残土" ? "#ef4444" : "#3b82f6",
       fillOpacity: 1,
       strokeWeight: 2,
       strokeColor: companyColors[company],
       scale: 10,
     }
-  });
+  }), []);
 
   const handleMarkerClick = (site: typeof sampleSites[0]) => {
     setSelectedSite(site);
@@ -100,39 +100,43 @@ const MapComponent = () => {
               fullscreenControl: true,
             }}
           >
-            {sampleSites.map((site) => (
-              <Marker
-                key={site.id}
-                position={{ lat: site.lat, lng: site.lng }}
-                onClick={() => handleMarkerClick(site)}
-                options={getMarkerOptions(site.siteType, site.company)}
-              />
-            ))}
+            {(map) => (
+              <>
+                {sampleSites.map((site) => (
+                  <Marker
+                    key={site.id}
+                    position={{ lat: site.lat, lng: site.lng }}
+                    onClick={() => handleMarkerClick(site)}
+                    options={getMarkerOptions(map)(site.siteType, site.company)}
+                  />
+                ))}
 
-            {selectedMarkerId && selectedSite && (
-              <InfoWindow
-                position={{ lat: selectedSite.lat, lng: selectedSite.lng }}
-                onCloseClick={handleInfoWindowClose}
-              >
-                <div className="p-2 min-w-[200px]">
-                  <div className="flex items-center gap-2 mb-2">
-                    <h3 className="font-bold text-lg">{selectedSite.name}</h3>
-                    <Badge variant={selectedSite.siteType === "残土" ? "destructive" : "default"}>
-                      {selectedSite.siteType}
-                    </Badge>
-                  </div>
-                  <p><span className="font-semibold">住所:</span> {selectedSite.address}</p>
-                  <p><span className="font-semibold">担当者:</span> {selectedSite.contactPerson}</p>
-                  <p><span className="font-semibold">連絡先:</span> {selectedSite.email}</p>
-                  <p><span className="font-semibold">担当会社:</span> {selectedSite.company}</p>
-                  <Button 
-                    className="w-full mt-4"
-                    onClick={handleTransactionClick}
+                {selectedMarkerId && selectedSite && (
+                  <InfoWindow
+                    position={{ lat: selectedSite.lat, lng: selectedSite.lng }}
+                    onCloseClick={handleInfoWindowClose}
                   >
-                    取引を申請
-                  </Button>
-                </div>
-              </InfoWindow>
+                    <div className="p-2 min-w-[200px]">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="font-bold text-lg">{selectedSite.name}</h3>
+                        <Badge variant={selectedSite.siteType === "残土" ? "destructive" : "default"}>
+                          {selectedSite.siteType}
+                        </Badge>
+                      </div>
+                      <p><span className="font-semibold">住所:</span> {selectedSite.address}</p>
+                      <p><span className="font-semibold">担当者:</span> {selectedSite.contactPerson}</p>
+                      <p><span className="font-semibold">連絡先:</span> {selectedSite.email}</p>
+                      <p><span className="font-semibold">担当会社:</span> {selectedSite.company}</p>
+                      <Button 
+                        className="w-full mt-4"
+                        onClick={handleTransactionClick}
+                      >
+                        取引を申請
+                      </Button>
+                    </div>
+                  </InfoWindow>
+                )}
+              </>
             )}
           </GoogleMap>
         </LoadScript>

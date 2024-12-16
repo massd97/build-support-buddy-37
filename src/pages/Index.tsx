@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import SiteRegistrationModal from "@/components/SiteRegistrationModal";
-import TransactionRegistrationModal from "@/components/TransactionRegistrationModal";
 import AvailableSitesList from "@/components/AvailableSitesList";
 import TransactionFeed from "@/components/TransactionFeed";
 import MapSearch from "@/components/MapSearch";
@@ -11,7 +10,6 @@ import MapComponent from "@/components/MapComponent";
 const Index = () => {
   // Modal state controls
   const [showSiteModal, setShowSiteModal] = useState(false);
-  const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [showSitesList, setShowSitesList] = useState(false);
   const [showTransactionFeed, setShowTransactionFeed] = useState(false);
   
@@ -43,7 +41,6 @@ const Index = () => {
 
       <ActionButtons
         setShowSiteModal={setShowSiteModal}
-        setShowTransactionModal={setShowTransactionModal}
         setShowSitesList={setShowSitesList}
         setShowTransactionFeed={setShowTransactionFeed}
       />
@@ -52,10 +49,6 @@ const Index = () => {
       <SiteRegistrationModal 
         open={showSiteModal} 
         onOpenChange={setShowSiteModal}
-      />
-      <TransactionRegistrationModal 
-        open={showTransactionModal}
-        onOpenChange={setShowTransactionModal}
       />
       <AvailableSitesList 
         open={showSitesList}
