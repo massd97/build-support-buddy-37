@@ -5,7 +5,37 @@ import AvailableSitesList from "@/components/AvailableSitesList";
 import TransactionFeed from "@/components/TransactionFeed";
 import MapSearch from "@/components/MapSearch";
 import ActionButtons from "@/components/ActionButtons";
-import MapComponent from "@/components/MapComponent";
+import MapContainer from "@/components/MapContainer";
+
+// Sample data for testing - Replace with actual data source
+const sampleSites = [
+  {
+    id: "1",
+    name: "渋谷建設現場",
+    address: "東京都渋谷区神南1-1-1",
+    lat: 35.6612,
+    lng: 139.7010,
+    soilAmount: "500",
+    soilType: "砂質",
+    siteType: "残土",
+    contactPerson: "山田太郎",
+    phone: "03-1234-5678",
+    company: "OHD"
+  },
+  {
+    id: "2",
+    name: "新宿工事現場",
+    address: "東京都新宿区新宿3-1-1",
+    lat: 35.6896,
+    lng: 139.7006,
+    soilAmount: "300",
+    soilType: "粘土質",
+    siteType: "客土",
+    contactPerson: "佐藤次郎",
+    phone: "03-8765-4321",
+    company: "Meldia"
+  }
+];
 
 const Index = () => {
   // Modal state controls
@@ -31,19 +61,26 @@ const Index = () => {
         SoilSync
       </h1>
 
-      <MapSearch
-        mapSearch={mapSearch}
-        setMapSearch={setMapSearch}
-        handleMapSearch={handleMapSearch}
-      />
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex items-start gap-4 mb-6">
+          <div className="flex-1">
+            <MapSearch
+              mapSearch={mapSearch}
+              setMapSearch={setMapSearch}
+              handleMapSearch={handleMapSearch}
+            />
+          </div>
+          <CompanyLegend />
+        </div>
 
-      <MapComponent />
+        <MapContainer sites={sampleSites} />
 
-      <ActionButtons
-        setShowSiteModal={setShowSiteModal}
-        setShowSitesList={setShowSitesList}
-        setShowTransactionFeed={setShowTransactionFeed}
-      />
+        <ActionButtons
+          setShowSiteModal={setShowSiteModal}
+          setShowSitesList={setShowSitesList}
+          setShowTransactionFeed={setShowTransactionFeed}
+        />
+      </div>
 
       {/* Modals */}
       <SiteRegistrationModal 
