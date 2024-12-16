@@ -22,6 +22,7 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
   const [soilType, setSoilType] = useState("");
   const [otherSoilType, setOtherSoilType] = useState("");
   const [image, setImage] = useState<File | null>(null);
+  const [company, setCompany] = useState<"OHD" | "Meldia" | "HawkOne">("OHD");
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -56,6 +57,20 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
           </RadioGroup>
 
           <div className="grid gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="company">担当会社</Label>
+              <Select onValueChange={(value) => setCompany(value as typeof company)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="担当会社を選択してください" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="OHD">OHD</SelectItem>
+                  <SelectItem value="Meldia">Meldia</SelectItem>
+                  <SelectItem value="HawkOne">HawkOne</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="grid gap-2">
               <Label htmlFor="siteName">現場名</Label>
               <Input id="siteName" />

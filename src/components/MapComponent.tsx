@@ -9,6 +9,7 @@ import { GoogleMap, LoadScript, Marker, InfoWindow } from '@react-google-maps/ap
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import CompanyLegend from './CompanyLegend';
 import TransactionRegistrationModal from './TransactionRegistrationModal';
 
 // Sample data for testing - Replace with actual data source
@@ -21,7 +22,8 @@ const sampleSites = [
     lng: 139.7010,
     contactPerson: "山田太郎",
     email: "yamada@example.com",
-    siteType: "残土" as const
+    siteType: "残土" as const,
+    company: "OHD" as const
   },
   {
     id: "2",
@@ -31,9 +33,16 @@ const sampleSites = [
     lng: 139.7006,
     contactPerson: "佐藤次郎",
     email: "sato@example.com",
-    siteType: "客土" as const
+    siteType: "客土" as const,
+    company: "Meldia" as const
   }
 ];
+
+const companyColors = {
+  OHD: "#22c55e", // green-500
+  Meldia: "#a855f7", // purple-500
+  HawkOne: "#f97316" // orange-500
+};
 
 const MapComponent = () => {
   const [showTransactionModal, setShowTransactionModal] = useState(false);
@@ -46,14 +55,14 @@ const MapComponent = () => {
     height: '700px'
   };
 
-  // Custom marker icons based on site type
-  const getMarkerOptions = (siteType: "残土" | "客土") => ({
+  // Custom marker icons based on site type and company
+  const getMarkerOptions = (siteType: "残土" | "客土", company: keyof typeof companyColors) => ({
     icon: {
       path: google.maps.SymbolPath.CIRCLE,
       fillColor: siteType === "残土" ? "#ef4444" : "#3b82f6",
       fillOpacity: 1,
-      strokeWeight: 1,
-      strokeColor: "#ffffff",
+      strokeWeight: 2,
+      strokeColor: companyColors[company],
       scale: 10,
     }
   });
@@ -77,7 +86,8 @@ const MapComponent = () => {
 
   return (
     <>
-      <div className="w-full h-[700px] lg:h-[800px] mb-6 rounded-lg overflow-hidden shadow-lg">
+      <div className="w-full h-[700px] lg:h-[800px] mb-6 rounded-lg overflow-hidden shadow-lg relative">
+        <CompanyLegend />
         <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ''}>
           <GoogleMap
             mapContainerStyle={mapContainerStyle}
@@ -95,7 +105,7 @@ const MapComponent = () => {
                 key={site.id}
                 position={{ lat: site.lat, lng: site.lng }}
                 onClick={() => handleMarkerClick(site)}
-                options={getMarkerOptions(site.siteType)}
+                options={getMarkerOptions(site.siteType, site.company)}
               />
             ))}
 
@@ -114,6 +124,7 @@ const MapComponent = () => {
                   <p><span className="font-semibold">住所:</span> {selectedSite.address}</p>
                   <p><span className="font-semibold">担当者:</span> {selectedSite.contactPerson}</p>
                   <p><span className="font-semibold">連絡先:</span> {selectedSite.email}</p>
+                  <p><span className="font-semibold">担当会社:</span> {selectedSite.company}</p>
                   <Button 
                     className="w-full mt-4"
                     onClick={handleTransactionClick}

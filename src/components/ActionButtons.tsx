@@ -2,14 +2,12 @@ import { Button } from "@/components/ui/button";
 
 interface ActionButtonsProps {
   setShowSiteModal: (show: boolean) => void;
-  setShowTransactionModal: (show: boolean) => void;
   setShowSitesList: (show: boolean) => void;
   setShowTransactionFeed: (show: boolean) => void;
 }
 
 const ActionButtons = ({
   setShowSiteModal,
-  setShowTransactionModal,
   setShowSitesList,
   setShowTransactionFeed,
 }: ActionButtonsProps) => {
@@ -22,15 +20,6 @@ const ActionButtons = ({
           className="flex-1 h-16 text-sm"
         >
           現場新規登録
-        </Button>
-        <Button 
-          variant="ghost" 
-          onClick={() => setShowTransactionModal(true)}
-          className="flex-1 h-16 text-sm"
-        >
-          取引新規登録
-          <br />
-          （残土/客土）
         </Button>
         <Button 
           variant="ghost" 
