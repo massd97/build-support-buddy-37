@@ -55,18 +55,6 @@ const MapComponent = () => {
     height: '700px'
   };
 
-  // Custom marker icons based on site type and company
-  const getMarkerOptions = useCallback((map: any) => (siteType: "残土" | "客土", company: keyof typeof companyColors) => ({
-    icon: {
-      path: map.SymbolPath.CIRCLE,
-      fillColor: siteType === "残土" ? "#ef4444" : "#3b82f6",
-      fillOpacity: 1,
-      strokeWeight: 2,
-      strokeColor: companyColors[company],
-      scale: 10,
-    }
-  }), []);
-
   const handleMarkerClick = (site: typeof sampleSites[0]) => {
     setSelectedSite(site);
     setSelectedMarkerId(site.id);
@@ -100,43 +88,46 @@ const MapComponent = () => {
               fullscreenControl: true,
             }}
           >
-            {(map) => (
-              <>
-                {sampleSites.map((site) => (
-                  <Marker
-                    key={site.id}
-                    position={{ lat: site.lat, lng: site.lng }}
-                    onClick={() => handleMarkerClick(site)}
-                    options={getMarkerOptions(map)(site.siteType, site.company)}
-                  />
-                ))}
+            {sampleSites.map((site) => (
+              <Marker
+                key={site.id}
+                position={{ lat: site.lat, lng: site.lng }}
+                onClick={() => handleMarkerClick(site)}
+                icon={{
+                  path: google.maps.SymbolPath.CIRCLE,
+                  fillColor: site.siteType === "残土" ? "#ef4444" : "#3b82f6",
+                  fillOpacity: 1,
+                  strokeWeight: 2,
+                  strokeColor: companyColors[site.company],
+                  scale: 10,
+                }}
+              />
+            ))}
 
-                {selectedMarkerId && selectedSite && (
-                  <InfoWindow
-                    position={{ lat: selectedSite.lat, lng: selectedSite.lng }}
-                    onCloseClick={handleInfoWindowClose}
+            {selectedMarkerId && selectedSite && (
+              <InfoWindow
+                position={{ lat: selectedSite.lat, lng: selectedSite.lng }}
+                onCloseClick={handleInfoWindowClose}
+              >
+                <div className="p-2 min-w-[200px]">
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="font-bold text-lg">{selectedSite.name}</h3>
+                    <Badge variant={selectedSite.siteType === "残土" ? "destructive" : "default"}>
+                      {selectedSite.siteType}
+                    </Badge>
+                  </div>
+                  <p><span className="font-semibold">住所:</span> {selectedSite.address}</p>
+                  <p><span className="font-semibold">担当者:</span> {selectedSite.contactPerson}</p>
+                  <p><span className="font-semibold">連絡先:</span> {selectedSite.email}</p>
+                  <p><span className="font-semibold">担当会社:</span> {selectedSite.company}</p>
+                  <Button 
+                    className="w-full mt-4"
+                    onClick={handleTransactionClick}
                   >
-                    <div className="p-2 min-w-[200px]">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="font-bold text-lg">{selectedSite.name}</h3>
-                        <Badge variant={selectedSite.siteType === "残土" ? "destructive" : "default"}>
-                          {selectedSite.siteType}
-                        </Badge>
-                      </div>
-                      <p><span className="font-semibold">住所:</span> {selectedSite.address}</p>
-                      <p><span className="font-semibold">担当者:</span> {selectedSite.contactPerson}</p>
-                      <p><span className="font-semibold">連絡先:</span> {selectedSite.email}</p>
-                      <p><span className="font-semibold">担当会社:</span> {selectedSite.company}</p>
-                      <Button 
-                        className="w-full mt-4"
-                        onClick={handleTransactionClick}
-                      >
-                        取引を申請
-                      </Button>
-                    </div>
-                  </InfoWindow>
-                )}
-              </>
+                    取引を申請
+                  </Button>
+                </div>
+              </InfoWindow>
             )}
           </GoogleMap>
         </LoadScript>
