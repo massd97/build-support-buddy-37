@@ -51,8 +51,10 @@ const MapContainer = ({
         />
       </div>
       
-      {/* Legend - positioned inside map but above filters */}
-      <CompanyLegend className="absolute top-32 right-4 z-50" />
+      {/* Legend - positioned inside map with responsive positioning */}
+      <div className="absolute top-32 right-2 sm:right-4 z-50">
+        <CompanyLegend />
+      </div>
       
       {/* Map Component */}
       <MapComponent sites={filteredSites} />
