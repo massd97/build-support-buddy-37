@@ -69,7 +69,7 @@ const MapComponent = () => {
   return (
     <>
       <div className="w-full h-[700px] lg:h-[800px] mb-6 rounded-lg overflow-hidden shadow-lg">
-        <LoadScript googleMapsApiKey={process.env.GOOGLE_MAPS_API_KEY || ''}>
+        <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ''}>
           <GoogleMap
             mapContainerStyle={mapContainerStyle}
             center={center}
