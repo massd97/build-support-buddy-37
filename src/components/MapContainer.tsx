@@ -74,7 +74,7 @@ const MapContainer = ({
       </div>
       
       {/* Legend - positioned at bottom left with padding to avoid buttons */}
-      <div className="absolute bottom-32 left-2 sm:left-4 z-50">
+      <div className="absolute bottom-32 left-2 sm:left-4 z-[1]">
         <CompanyLegend />
       </div>
       

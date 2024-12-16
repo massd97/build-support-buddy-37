@@ -12,7 +12,7 @@ const ActionButtons = ({
   setShowTransactionFeed,
 }: ActionButtonsProps) => {
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2">
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 z-[100]">
       <div className="max-w-screen-xl mx-auto flex justify-between items-center gap-2">
         <Button 
           variant="ghost" 
