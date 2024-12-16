@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import { CompanyType, SiteType } from "@/types/site";
 import SiteRegistrationModal from "@/components/SiteRegistrationModal";
 import AvailableSitesList from "@/components/AvailableSitesList";
 import TransactionFeed from "@/components/TransactionFeed";
 import MapSearch from "@/components/MapSearch";
 import ActionButtons from "@/components/ActionButtons";
 import MapContainer from "@/components/MapContainer";
+import CompanyLegend from "@/components/CompanyLegend";
 
 // Sample data for testing - Replace with actual data source
 const sampleSites = [
@@ -17,10 +19,10 @@ const sampleSites = [
     lng: 139.7010,
     soilAmount: "500",
     soilType: "砂質",
-    siteType: "残土",
+    siteType: "残土" as SiteType,
     contactPerson: "山田太郎",
     phone: "03-1234-5678",
-    company: "OHD"
+    company: "OHD" as CompanyType
   },
   {
     id: "2",
@@ -30,10 +32,10 @@ const sampleSites = [
     lng: 139.7006,
     soilAmount: "300",
     soilType: "粘土質",
-    siteType: "客土",
+    siteType: "客土" as SiteType,
     contactPerson: "佐藤次郎",
     phone: "03-8765-4321",
-    company: "Meldia"
+    company: "Meldia" as CompanyType
   }
 ];
 
@@ -45,6 +47,10 @@ const Index = () => {
   
   // Map related states
   const [mapSearch, setMapSearch] = useState("");
+  const [company, setCompany] = useState<CompanyType | "all">("all");
+  const [siteType, setSiteType] = useState<SiteType | "all">("all");
+  const [minSoilAmount, setMinSoilAmount] = useState("");
+  const [soilType, setSoilType] = useState("all");
 
   const handleMapSearch = async () => {
     if (!mapSearch) return;
@@ -73,7 +79,17 @@ const Index = () => {
           <CompanyLegend />
         </div>
 
-        <MapContainer sites={sampleSites} />
+        <MapContainer 
+          sites={sampleSites}
+          company={company}
+          setCompany={setCompany}
+          siteType={siteType}
+          setSiteType={setSiteType}
+          minSoilAmount={minSoilAmount}
+          setMinSoilAmount={setMinSoilAmount}
+          soilType={soilType}
+          setSoilType={setSoilType}
+        />
 
         <ActionButtons
           setShowSiteModal={setShowSiteModal}
