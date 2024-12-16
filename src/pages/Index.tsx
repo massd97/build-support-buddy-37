@@ -7,7 +7,6 @@ import TransactionFeed from "@/components/TransactionFeed";
 import MapSearch from "@/components/MapSearch";
 import ActionButtons from "@/components/ActionButtons";
 import MapContainer from "@/components/MapContainer";
-import CompanyLegend from "@/components/CompanyLegend";
 
 // Sample data for testing - Replace with actual data source
 const sampleSites = [
@@ -76,7 +75,6 @@ const Index = () => {
               handleMapSearch={handleMapSearch}
             />
           </div>
-          <CompanyLegend />
         </div>
 
         <MapContainer 
