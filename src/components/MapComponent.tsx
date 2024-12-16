@@ -48,6 +48,7 @@ const MapComponent = () => {
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [selectedSite, setSelectedSite] = useState<typeof sampleSites[0] | null>(null);
   const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
   
   const center = { lat: 35.6762, lng: 139.6503 }; // Tokyo center
   const mapContainerStyle = {
@@ -72,11 +73,23 @@ const MapComponent = () => {
     setShowTransactionModal(true);
   };
 
+  const getMarkerIcon = (siteType: "残土" | "客土", company: keyof typeof companyColors) => ({
+    path: window.google?.maps.SymbolPath.CIRCLE,
+    fillColor: siteType === "残土" ? "#ef4444" : "#3b82f6",
+    fillOpacity: 1,
+    strokeWeight: 2,
+    strokeColor: companyColors[company],
+    scale: 10,
+  });
+
   return (
     <>
       <div className="w-full h-[700px] lg:h-[800px] mb-6 rounded-lg overflow-hidden shadow-lg relative">
         <CompanyLegend />
-        <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ''}>
+        <LoadScript 
+          googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ''}
+          onLoad={() => setMapLoaded(true)}
+        >
           <GoogleMap
             mapContainerStyle={mapContainerStyle}
             center={center}
@@ -88,19 +101,12 @@ const MapComponent = () => {
               fullscreenControl: true,
             }}
           >
-            {sampleSites.map((site) => (
+            {mapLoaded && sampleSites.map((site) => (
               <Marker
                 key={site.id}
                 position={{ lat: site.lat, lng: site.lng }}
                 onClick={() => handleMarkerClick(site)}
-                icon={{
-                  path: google.maps.SymbolPath.CIRCLE,
-                  fillColor: site.siteType === "残土" ? "#ef4444" : "#3b82f6",
-                  fillOpacity: 1,
-                  strokeWeight: 2,
-                  strokeColor: companyColors[site.company],
-                  scale: 10,
-                }}
+                icon={getMarkerIcon(site.siteType, site.company)}
               />
             ))}
 
