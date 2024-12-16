@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -14,6 +15,7 @@ interface Site {
   contactPerson: string;
   soilAmount: string;
   soilType: string;
+  siteType: "残土" | "客土";
   lat: number;
   lng: number;
   phone: string;
@@ -45,7 +47,12 @@ const SiteDetailsDialog = ({
         </DialogHeader>
         <div className="p-4 space-y-4">
           <div>
-            <h3 className="font-bold text-lg mb-2">{site.name}</h3>
+            <div className="flex items-center gap-2 mb-2">
+              <h3 className="font-bold text-lg">{site.name}</h3>
+              <Badge variant={site.siteType === "残土" ? "destructive" : "default"}>
+                {site.siteType}
+              </Badge>
+            </div>
             <div className="space-y-2">
               <p><span className="font-semibold">住所:</span> {site.address}</p>
               <p><span className="font-semibold">残土の量:</span> {site.soilAmount}</p>

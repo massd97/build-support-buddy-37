@@ -6,6 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 
 interface Site {
   id: string;
@@ -14,6 +15,7 @@ interface Site {
   contactPerson: string;
   soilAmount: string;
   soilType: string;
+  siteType: "残土" | "客土";
   lat: number;
   lng: number;
   phone: string;
@@ -29,6 +31,7 @@ const SitesTable = ({ sites, onSiteClick }: SitesTableProps) => {
     <Table>
       <TableHeader>
         <TableRow>
+          <TableHead>種類</TableHead>
           <TableHead>現場名</TableHead>
           <TableHead>住所</TableHead>
           <TableHead>担当者</TableHead>
@@ -43,6 +46,11 @@ const SitesTable = ({ sites, onSiteClick }: SitesTableProps) => {
             className="cursor-pointer hover:bg-gray-100"
             onClick={() => onSiteClick(site)}
           >
+            <TableCell>
+              <Badge variant={site.siteType === "残土" ? "destructive" : "default"}>
+                {site.siteType}
+              </Badge>
+            </TableCell>
             <TableCell>{site.name}</TableCell>
             <TableCell>{site.address}</TableCell>
             <TableCell>{site.contactPerson}</TableCell>

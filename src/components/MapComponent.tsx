@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { GoogleMap, LoadScript, Marker, InfoWindow } from '@react-google-maps/api';
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import TransactionRegistrationModal from './TransactionRegistrationModal';
 
 // Sample data for testing - Replace with actual data source
@@ -19,7 +20,8 @@ const sampleSites = [
     lat: 35.6612,
     lng: 139.7010,
     contactPerson: "山田太郎",
-    email: "yamada@example.com"
+    email: "yamada@example.com",
+    siteType: "残土" as const
   },
   {
     id: "2",
@@ -28,7 +30,8 @@ const sampleSites = [
     lat: 35.6896,
     lng: 139.7006,
     contactPerson: "佐藤次郎",
-    email: "sato@example.com"
+    email: "sato@example.com",
+    siteType: "客土" as const
   }
 ];
 
@@ -43,16 +46,22 @@ const MapComponent = () => {
     height: '700px'
   };
 
-  // Custom marker icons can be defined here
-  // ADD_MARKER: Define new marker icons or colors here
-  const defaultMarkerOptions = {
-    // You can customize marker appearance here
-  };
+  // Custom marker icons based on site type
+  const getMarkerOptions = (siteType: "残土" | "客土") => ({
+    icon: {
+      path: google.maps.SymbolPath.CIRCLE,
+      fillColor: siteType === "残土" ? "#ef4444" : "#3b82f6",
+      fillOpacity: 1,
+      strokeWeight: 1,
+      strokeColor: "#ffffff",
+      scale: 10,
+    }
+  });
 
   const handleMarkerClick = (site: typeof sampleSites[0]) => {
     setSelectedSite(site);
     setSelectedMarkerId(site.id);
-    toast.info(`${site.name} - ${site.address}`);
+    toast.info(`${site.name} - ${site.siteType}`);
   };
 
   const handleInfoWindowClose = () => {
@@ -81,13 +90,12 @@ const MapComponent = () => {
               fullscreenControl: true,
             }}
           >
-            {/* ADD_MARKER: Add new markers by pushing to sampleSites array */}
             {sampleSites.map((site) => (
               <Marker
                 key={site.id}
                 position={{ lat: site.lat, lng: site.lng }}
                 onClick={() => handleMarkerClick(site)}
-                options={defaultMarkerOptions}
+                options={getMarkerOptions(site.siteType)}
               />
             ))}
 
@@ -97,7 +105,12 @@ const MapComponent = () => {
                 onCloseClick={handleInfoWindowClose}
               >
                 <div className="p-2 min-w-[200px]">
-                  <h3 className="font-bold text-lg mb-2">{selectedSite.name}</h3>
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="font-bold text-lg">{selectedSite.name}</h3>
+                    <Badge variant={selectedSite.siteType === "残土" ? "destructive" : "default"}>
+                      {selectedSite.siteType}
+                    </Badge>
+                  </div>
                   <p><span className="font-semibold">住所:</span> {selectedSite.address}</p>
                   <p><span className="font-semibold">担当者:</span> {selectedSite.contactPerson}</p>
                   <p><span className="font-semibold">連絡先:</span> {selectedSite.email}</p>

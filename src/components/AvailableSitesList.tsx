@@ -26,6 +26,7 @@ const sampleSites = [
     lng: 139.7010,
     soilAmount: "500㎥",
     soilType: "砂質土",
+    siteType: "残土" as const,
     contactPerson: "山田太郎",
     phone: "03-1234-5678"
   },
@@ -37,6 +38,7 @@ const sampleSites = [
     lng: 139.7006,
     soilAmount: "300㎥",
     soilType: "粘土",
+    siteType: "客土" as const,
     contactPerson: "佐藤次郎",
     phone: "03-8765-4321"
   }
