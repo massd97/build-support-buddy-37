@@ -1,15 +1,3 @@
-/**
- * Index Page Component
- * 
- * This is the main page of the application that integrates all the core functionalities:
- * - Site registration and management
- * - Transaction handling
- * - Map visualization
- * - Search capabilities
- * 
- * The component is structured to be maintainable and scalable, with clear separation
- * of concerns between different functional areas.
- */
 import { useState } from "react";
 import { toast } from "sonner";
 import SiteRegistrationModal from "@/components/SiteRegistrationModal";
@@ -30,14 +18,9 @@ const Index = () => {
   // Map related states
   const [mapSearch, setMapSearch] = useState("");
 
-  /**
-   * Handles the map search functionality
-   */
   const handleMapSearch = async () => {
     if (!mapSearch) return;
-    
     try {
-      // Here you would typically integrate with a geocoding service
       toast.success("検索機能は現在実装中です");
     } catch (error) {
       toast.error("検索中にエラーが発生しました");
@@ -45,18 +28,10 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen p-4">
-      {/* App Name */}
+    <div className="min-h-screen pb-20">
       <h1 className="text-2xl font-bold text-center mb-6 text-primary">
         SoilSync
       </h1>
-
-      <ActionButtons
-        setShowSiteModal={setShowSiteModal}
-        setShowTransactionModal={setShowTransactionModal}
-        setShowSitesList={setShowSitesList}
-        setShowTransactionFeed={setShowTransactionFeed}
-      />
 
       <MapSearch
         mapSearch={mapSearch}
@@ -65,6 +40,13 @@ const Index = () => {
       />
 
       <MapComponent />
+
+      <ActionButtons
+        setShowSiteModal={setShowSiteModal}
+        setShowTransactionModal={setShowTransactionModal}
+        setShowSitesList={setShowSitesList}
+        setShowTransactionFeed={setShowTransactionFeed}
+      />
 
       {/* Modals */}
       <SiteRegistrationModal 

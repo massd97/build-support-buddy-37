@@ -1,18 +1,4 @@
-/**
- * ActionButtons Component
- * 
- * This component contains the main action buttons for site and transaction registration,
- * as well as the dropdown menu for accessing lists. It's responsive and provides
- * easy access to the main functionalities of the application.
- */
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ChevronDown, List } from "lucide-react";
 
 interface ActionButtonsProps {
   setShowSiteModal: (show: boolean) => void;
@@ -28,36 +14,38 @@ const ActionButtons = ({
   setShowTransactionFeed,
 }: ActionButtonsProps) => {
   return (
-    <div className="flex flex-col sm:flex-row items-center gap-4 mb-6">
-      {/* Registration buttons */}
-      <div className="flex gap-4 flex-wrap justify-center">
-        <Button onClick={() => setShowSiteModal(true)} className="text-lg">
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2">
+      <div className="max-w-screen-xl mx-auto flex justify-between items-center gap-2">
+        <Button 
+          variant="ghost" 
+          onClick={() => setShowSiteModal(true)}
+          className="flex-1 h-16 text-sm"
+        >
           現場新規登録
         </Button>
-        <Button onClick={() => setShowTransactionModal(true)} className="text-lg">
+        <Button 
+          variant="ghost" 
+          onClick={() => setShowTransactionModal(true)}
+          className="flex-1 h-16 text-sm"
+        >
           取引新規登録
+          <br />
+          （残土/客土）
         </Button>
-      </div>
-
-      {/* Lists dropdown - centers on small screens */}
-      <div className="w-full sm:w-auto flex justify-center">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="gap-2">
-              <List className="h-4 w-4" />
-              一覧表示
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem onClick={() => setShowSitesList(true)}>
-              使用可能現場一覧
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setShowTransactionFeed(true)}>
-              トランザクションフィード
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Button 
+          variant="ghost" 
+          onClick={() => setShowSitesList(true)}
+          className="flex-1 h-16 text-sm"
+        >
+          現場一覧
+        </Button>
+        <Button 
+          variant="ghost" 
+          onClick={() => setShowTransactionFeed(true)}
+          className="flex-1 h-16 text-sm"
+        >
+          取引一覧
+        </Button>
       </div>
     </div>
   );
