@@ -51,8 +51,8 @@ const MapContainer = ({
         />
       </div>
       
-      {/* Legend - positioned inside map with responsive positioning */}
-      <div className="absolute top-32 right-2 sm:right-4 z-50">
+      {/* Legend - positioned at bottom left with responsive padding */}
+      <div className="absolute bottom-4 left-2 sm:left-4 z-50">
         <CompanyLegend />
       </div>
       
