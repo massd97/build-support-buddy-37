@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-// Declare the google object with the script property
+
 declare const google: {
   script: {
     run: {
@@ -64,27 +64,27 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
         ...formData,
         siteType,
         soilType: soilType === "その他" ? otherSoilType : soilType,
-        image: image ? await readFileAsBase64(image) : null, // Convert image to Base64 for backend
+        image: image ? await readFileAsBase64(image) : null,
         company,
       };
 
       console.log("Submitting site data:", payload);
 
-      // Call backend function (e.g., google.script.run)
       google.script.run
         .withSuccessHandler(() => {
           alert("登録成功！");
-          onOpenChange(false); // Close the modal
+          onOpenChange(false);
         })
         .withFailureHandler((error) => {
           console.error("Registration failed:", error);
           alert("登録失敗！");
         })
-        .registerSite(payload); // Backend function to handle registration
+        .registerSite(payload);
     } catch (error) {
       console.error("Error during registration:", error);
     }
   };
+
   const readFileAsBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -94,7 +94,6 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
     });
   };
 
-  // Define form fields
   const commonFields = [
     { id: "siteName", label: "現場名", type: "text", required: true },
     { id: "address", label: "住所", type: "text", required: true },
@@ -121,7 +120,7 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto z-[100]">
+      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto" style={{ zIndex: 999 }}>
         <DialogHeader>
           <DialogTitle>現場新規登録（残土/客土）</DialogTitle>
           <DialogDescription>
@@ -145,7 +144,6 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
             </div>
           </RadioGroup>
 
-          {/* Common Fields */}
           {commonFields.map((field) => (
             <div className="grid gap-2" key={field.id}>
               <Label htmlFor={field.id}>{field.label}</Label>
@@ -159,7 +157,6 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
             </div>
           ))}
 
-          {/* Site-Type-Specific Fields */}
           {siteTypeSpecificFields.map((field) =>
             field.type === "dropdown" ? (
               <div className="grid gap-2" key={field.id}>
@@ -195,7 +192,6 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
             )
           )}
 
-          {/* Image Upload */}
           <div className="grid gap-2">
             <Label htmlFor="image">画像添付</Label>
             <Input
@@ -205,7 +201,6 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
               onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
             />
           </div>
-          {/* Company */}
           <div className="grid gap-2">
             <Label htmlFor="company">施工会社</Label>
             <Select
