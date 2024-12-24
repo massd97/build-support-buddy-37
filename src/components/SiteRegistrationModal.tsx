@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Dialog,
@@ -11,6 +10,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { FormField } from "./site-registration/SiteFormFields";
+import { SiteTypeRadio } from "./site-registration/SiteTypeRadio";
 
 declare const google: {
   script: {
@@ -120,7 +121,7 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto" style={{ zIndex: 999 }}>
+      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto" style={{ zIndex: 9998 }}>
         <DialogHeader>
           <DialogTitle>現場新規登録（残土/客土）</DialogTitle>
           <DialogDescription>
@@ -129,68 +130,27 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
-          <RadioGroup
-            defaultValue="残土"
-            onValueChange={(value) => setSiteType(value as "残土" | "客土")}
-            className="flex gap-4"
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="残土" id="残土" />
-              <Label htmlFor="残土">残土</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="客土" id="客土" />
-              <Label htmlFor="客土">客土</Label>
-            </div>
-          </RadioGroup>
+          <SiteTypeRadio value={siteType} onChange={setSiteType} />
 
           {commonFields.map((field) => (
-            <div className="grid gap-2" key={field.id}>
-              <Label htmlFor={field.id}>{field.label}</Label>
-              <Input
-                id={field.id}
-                type={field.type}
-                value={formData[field.id]}
-                onChange={handleInputChange}
-                required={field.required}
-              />
-            </div>
+            <FormField
+              key={field.id}
+              field={field}
+              formData={formData}
+              handleInputChange={handleInputChange}
+            />
           ))}
 
-          {siteTypeSpecificFields.map((field) =>
-            field.type === "dropdown" ? (
-              <div className="grid gap-2" key={field.id}>
-                <Label htmlFor={field.id}>{field.label}</Label>
-                <Select
-                  onValueChange={(value) => {
-                    if (field.id === "soilType") setSoilType(value);
-                    handleDropdownChange(field.id, value);
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={`${field.label}を選択してください`} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {field.options.map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            ) : (
-              <div className="grid gap-2" key={field.id}>
-                <Label htmlFor={field.id}>{field.label}</Label>
-                <Input
-                  id={field.id}
-                  type={field.type}
-                  value={formData[field.id]}
-                  onChange={handleInputChange}
-                />
-              </div>
-            )
-          )}
+          {siteTypeSpecificFields.map((field) => (
+            <FormField
+              key={field.id}
+              field={field}
+              formData={formData}
+              handleInputChange={handleInputChange}
+              handleDropdownChange={handleDropdownChange}
+              setSoilType={setSoilType}
+            />
+          ))}
 
           <div className="grid gap-2">
             <Label htmlFor="image">画像添付</Label>
@@ -201,15 +161,14 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
               onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
             />
           </div>
+
           <div className="grid gap-2">
             <Label htmlFor="company">施工会社</Label>
-            <Select
-              onValueChange={(value) => setCompany(value as "OHD" | "Meldia" | "HawkOne")}
-            >
+            <Select onValueChange={(value) => setCompany(value as "OHD" | "Meldia" | "HawkOne")}>
               <SelectTrigger>
                 <SelectValue placeholder="施工会社を選択してください" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent style={{ zIndex: 99999 }}>
                 <SelectItem value="OHD">OHD</SelectItem>
                 <SelectItem value="Meldia">Meldia</SelectItem>
                 <SelectItem value="HawkOne">HawkOne</SelectItem>
