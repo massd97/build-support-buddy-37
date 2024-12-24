@@ -32,7 +32,7 @@ const SiteFilters = ({
           <SelectTrigger>
             <SelectValue placeholder="施工会社を選択" />
           </SelectTrigger>
-          <SelectContent className="z-[200]">
+          <SelectContent className="z-[9999]">
             <SelectItem value="all">全て</SelectItem>
             <SelectItem value="OHD">OHD</SelectItem>
             <SelectItem value="Meldia">Meldia</SelectItem>
@@ -47,7 +47,7 @@ const SiteFilters = ({
           <SelectTrigger>
             <SelectValue placeholder="残土か客土かを選択" />
           </SelectTrigger>
-          <SelectContent className="z-[200]">
+          <SelectContent className="z-[9999]">
             <SelectItem value="all">全て</SelectItem>
             <SelectItem value="残土">残土</SelectItem>
             <SelectItem value="客土">客土</SelectItem>
@@ -71,7 +71,7 @@ const SiteFilters = ({
           <SelectTrigger>
             <SelectValue placeholder="土質を選択" />
           </SelectTrigger>
-          <SelectContent className="z-[200]">
+          <SelectContent className="z-[9999]">
             <SelectItem value="all">全て</SelectItem>
             <SelectItem value="黒土">黒土</SelectItem>
             <SelectItem value="赤土">赤土</SelectItem>
