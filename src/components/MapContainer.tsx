@@ -33,7 +33,6 @@ const MapContainer = ({
 }: MapContainerProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Filter sites based on criteria
   const filteredSites = sites.filter(site => {
     if (company !== "all" && site.company !== company) return false;
     if (siteType !== "all" && site.siteType !== siteType) return false;
@@ -44,8 +43,7 @@ const MapContainer = ({
 
   return (
     <div className="w-full h-[700px] lg:h-[800px] mb-6 rounded-lg overflow-hidden shadow-lg relative">
-      {/* Collapsible Filters Section */}
-      <div className="absolute top-0 left-0 right-20 z-10">
+      <div className="absolute top-0 left-0 right-20 z-40">
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
           <div className="bg-white/70 p-4">
             <CollapsibleTrigger asChild>
@@ -74,15 +72,13 @@ const MapContainer = ({
         </Collapsible>
       </div>
       
-      {/* Legend - positioned at bottom left with padding to avoid buttons */}
-      <div className="absolute bottom-6 left-2 sm:left-2 z-[1]">
+      <div className="absolute bottom-6 left-2 sm:left-2 z-30">
         <CompanyLegend />
       </div>
-      <div className="absolute bottom-32 left-6 sm:left-2 z-[1]">
+      <div className="absolute bottom-32 left-6 sm:left-2 z-30">
         <SiteTypeLegend />
       </div>
       
-      {/* Map Component */}
       <MapComponent sites={filteredSites} />
     </div>
   );

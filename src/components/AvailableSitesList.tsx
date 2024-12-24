@@ -50,7 +50,6 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
   const [showDetails, setShowDetails] = useState(false);
   const [showTransactionModal, setShowTransactionModal] = useState(false);
 
-  // Filter sites based on search input
   const filteredSites = sampleSites.filter(site => 
     site.name.toLowerCase().includes(search.toLowerCase()) ||
     site.address.toLowerCase().includes(search.toLowerCase()) ||
@@ -80,7 +79,7 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
   return (
     <>
       <Dialog open={open} onOpenChange={handleMainDialogClose}>
-        <DialogContent className="sm:max-w-[800px]">
+        <DialogContent className="sm:max-w-[800px] z-50">
           <DialogHeader>
             <DialogTitle>使用可能現場一覧</DialogTitle>
             <DialogDescription>
@@ -102,7 +101,7 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
         </DialogContent>
       </Dialog>
 
-      {showDetails && (
+      {showDetails && selectedSite && (
         <SiteDetailsDialog
           site={selectedSite}
           open={showDetails}
