@@ -26,13 +26,13 @@ const SiteFilters = ({
 }: SiteFiltersProps) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-      <div>
+      <div className="relative">
         <Label>施工会社</Label>
         <Select value={company} onValueChange={(value) => setCompany(value as CompanyType | "all")}>
           <SelectTrigger>
             <SelectValue placeholder="施工会社を選択" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="z-[200]">
             <SelectItem value="all">全て</SelectItem>
             <SelectItem value="OHD">OHD</SelectItem>
             <SelectItem value="Meldia">Meldia</SelectItem>
@@ -41,13 +41,13 @@ const SiteFilters = ({
         </Select>
       </div>
 
-      <div>
+      <div className="relative">
         <Label>残土/客土</Label>
         <Select value={siteType} onValueChange={(value) => setSiteType(value as SiteType | "all")}>
           <SelectTrigger>
             <SelectValue placeholder="残土か客土かを選択" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="z-[200]">
             <SelectItem value="all">全て</SelectItem>
             <SelectItem value="残土">残土</SelectItem>
             <SelectItem value="客土">客土</SelectItem>
@@ -65,13 +65,13 @@ const SiteFilters = ({
         />
       </div>
 
-      <div>
+      <div className="relative">
         <Label>土質</Label>
         <Select value={soilType} onValueChange={setSoilType}>
           <SelectTrigger>
             <SelectValue placeholder="土質を選択" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="z-[200]">
             <SelectItem value="all">全て</SelectItem>
             <SelectItem value="黒土">黒土</SelectItem>
             <SelectItem value="赤土">赤土</SelectItem>
