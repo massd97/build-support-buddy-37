@@ -18,6 +18,7 @@ interface MapSearchProps {
 }
 
 const MapSearch = ({ mapSearch, setMapSearch, handleMapSearch }: MapSearchProps) => {
+  console.log(mapSearch);
   return (
     <div className="mb-6 flex flex-col sm:flex-row gap-2 sm:gap-0 items-center max-w-xl mx-auto">
       <Input
@@ -28,7 +29,7 @@ const MapSearch = ({ mapSearch, setMapSearch, handleMapSearch }: MapSearchProps)
         className="w-full sm:rounded-r-none"
         onKeyDown={(e) => e.key === 'Enter' && handleMapSearch()}
       />
-      <Button 
+      <Button
         onClick={handleMapSearch}
         className="w-full sm:w-auto sm:rounded-l-none"
       >

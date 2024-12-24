@@ -23,7 +23,7 @@ const TransactionFeed = ({ open, onOpenChange }: TransactionFeedProps) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[800px]">
         <DialogHeader>
-          <DialogTitle>トランザクションフィード</DialogTitle>
+          <DialogTitle>取引一覧</DialogTitle>
         </DialogHeader>
         <div className="py-4">
           <Table>

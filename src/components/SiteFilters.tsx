@@ -27,10 +27,10 @@ const SiteFilters = ({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
       <div>
-        <Label>担当会社</Label>
+        <Label>施工会社</Label>
         <Select value={company} onValueChange={(value) => setCompany(value as CompanyType | "all")}>
           <SelectTrigger>
-            <SelectValue placeholder="担当会社を選択" />
+            <SelectValue placeholder="施工会社を選択" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">全て</SelectItem>
@@ -42,10 +42,10 @@ const SiteFilters = ({
       </div>
 
       <div>
-        <Label>種類</Label>
+        <Label>残土/客土</Label>
         <Select value={siteType} onValueChange={(value) => setSiteType(value as SiteType | "all")}>
           <SelectTrigger>
-            <SelectValue placeholder="種類を選択" />
+            <SelectValue placeholder="残土か客土かを選択" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">全て</SelectItem>

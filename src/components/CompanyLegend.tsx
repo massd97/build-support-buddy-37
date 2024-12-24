@@ -1,5 +1,3 @@
-import { Badge } from "@/components/ui/badge";
-
 const CompanyLegend = ({ className = "" }: { className?: string }) => {
   return (
     <div className={`bg-white p-2 rounded-lg shadow-md ${className}`}>
@@ -13,7 +11,7 @@ const CompanyLegend = ({ className = "" }: { className?: string }) => {
           <span className="text-sm">Meldia</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full border-4 border-orange-500"></div>
+          <div className="w-4 h-4 rounded-full border-4 border-yellow-500"></div>
           <span className="text-sm">HawkOne</span>
         </div>
       </div>
