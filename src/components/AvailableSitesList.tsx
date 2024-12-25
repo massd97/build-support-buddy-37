@@ -6,51 +6,59 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TransactionRegistrationModal from "./TransactionRegistrationModal";
 import SitesTable from "./SitesTable";
 import SiteDetailsDialog from "./SiteDetailsDialog";
+declare const google: {
+  script: {
+    run: {
+      withSuccessHandler: (callback: (response) => void) => {
+        withFailureHandler: (callback: (error: any) => void) => {
+          fetchSites: () => void;
+        };
+      };
+    };
+  };
+};
 
 interface AvailableSitesListProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-// Sample data for testing
-const sampleSites = [
-  {
-    id: "1",
-    name: "渋谷建設現場",
-    address: "東京都渋谷区神南1-1-1",
-    lat: 35.6612,
-    lng: 139.7010,
-    soilAmount: "500㎥",
-    soilType: "砂質土",
-    siteType: "残土" as const,
-    contactPerson: "山田太郎",
-    phone: "03-1234-5678"
-  },
-  {
-    id: "2",
-    name: "新宿工事現場",
-    address: "東京都新宿区新宿3-1-1",
-    lat: 35.6896,
-    lng: 139.7006,
-    soilAmount: "300㎥",
-    soilType: "粘土",
-    siteType: "客土" as const,
-    contactPerson: "佐藤次郎",
-    phone: "03-8765-4321"
-  }
-];
-
 const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => {
   const [search, setSearch] = useState("");
-  const [selectedSite, setSelectedSite] = useState<typeof sampleSites[0] | null>(null);
+  const [sites, setSites] = useState<any[]>([]); // State for sites fetched from GAS
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState<string | null>(null); // Error state
+  const [selectedSite, setSelectedSite] = useState<typeof sites[0] | null>(null);
   const [showDetails, setShowDetails] = useState(false);
   const [showTransactionModal, setShowTransactionModal] = useState(false);
 
-  const filteredSites = sampleSites.filter(site => 
+  useEffect(() => {
+    if (open) {
+      setLoading(true);
+      setError(null);
+      google.script.run
+        .withSuccessHandler((response) => {
+          if (response.success) {
+            setSites(response.sites);
+          } else {
+            setError(response.message || "Failed to fetch sites.");
+          }
+          setLoading(false);
+        })
+        .withFailureHandler((err) => {
+          console.error("Error fetching sites:", err);
+          setError("An error occurred while fetching sites.");
+          setLoading(false);
+        })
+        .fetchSites(); // GAS function to fetch sites
+    }
+  }, [open]);
+
+  const filteredSites = sites.filter(site => 
     site.name.toLowerCase().includes(search.toLowerCase()) ||
     site.address.toLowerCase().includes(search.toLowerCase()) ||
     site.contactPerson.toLowerCase().includes(search.toLowerCase())
@@ -66,9 +74,14 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
     onOpenChange(open);
   };
 
-  const handleSiteClick = (site: typeof sampleSites[0]) => {
-    setSelectedSite(site);
-    setShowDetails(true);
+  const handleSiteClick = (site: any) => {
+    if (site.Lat && site.Lng) {
+      console.log(`Site clicked: ${site["Site Name"]}, Lat: ${site.Lat}, Lng: ${site.Lng}`);
+      setSelectedSite(site);
+      setShowDetails(true);
+    } else {
+      console.warn("Selected site has no geolocation data.");
+    }
   };
 
   const handleTransactionClick = () => {
@@ -87,16 +100,24 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <Input
-              placeholder="検索 (住所、現場名、担当者名)"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="mb-4"
-            />
-            <SitesTable 
-              sites={filteredSites}
-              onSiteClick={handleSiteClick}
-            />
+            { loading ? (
+              <div>Loading...</div>
+            ) : error ? (
+              <div>{error}</div>
+            ) : (
+              <>
+                <Input
+                  placeholder="検索 (住所、現場名、担当者名)"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="mb-4"
+                />
+                <SitesTable 
+                  sites={filteredSites}
+                  onSiteClick={handleSiteClick}
+                />
+              </>
+            )}
           </div>
         </DialogContent>
       </Dialog>

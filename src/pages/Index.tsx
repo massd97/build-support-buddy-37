@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { CompanyType, SiteType } from "@/types/site";
 import SiteRegistrationModal from "@/components/SiteRegistrationModal";
@@ -8,59 +8,23 @@ import MapSearch from "@/components/MapSearch";
 import ActionButtons from "@/components/ActionButtons";
 import MapContainer from "@/components/MapContainer";
 
-const fetchSites = async () => {
-  try {
-    // Fetch sites from API
+declare const google: {
+  script: {
+    run: {
+      withSuccessHandler: <T>(callback: (response: T) => void) => {
+        withFailureHandler: (callback: (error: any) => void) => {
+          fetchSites: () => void;
+        };
+      };
+    };
+  };
+};
 
-    return [];
-  } catch (error) {
-    toast.error("Failed to fetch sites");
-    return [];
-  }
+interface FetchSitesResponse {
+  success: boolean;
+  message: string;
+  sites: any[]; // Update the type of `sites` based on your data structure if needed
 }
-
-// Sample data for testing - Replace with actual data source
-const sampleSites = [
-  {
-    id: "1",
-    name: "渋谷建設現場",
-    address: "東京都渋谷区神南1-1-1",
-    lat: 35.66,
-    lng: 139.7010,
-    soilAmount: "500",
-    soilType: "砂質",
-    siteType: "残土" as SiteType,
-    contactPerson: "三谷敦也",
-    phone: "03-1234-5678",
-    company: "OHD" as CompanyType
-  },
-  {
-    id: "2",
-    name: "新宿工事現場",
-    address: "東京都新宿区新宿3-1-1",
-    lat: 35.6896,
-    lng: 139.7006,
-    soilAmount: "300",
-    soilType: "粘土質",
-    siteType: "客土" as SiteType,
-    contactPerson: "田中和紀",
-    phone: "03-8765-4321",
-    company: "Meldia" as CompanyType
-  },
-  {
-    id: "3",
-    name: "新宿工事現場",
-    address: "東京都新宿区新宿3-1-1",
-    lat: 35.5933,
-    lng: 139.7006,
-    soilAmount: "300",
-    soilType: "粘土質",
-    siteType: "客土" as SiteType,
-    contactPerson: "佐伯研介",
-    phone: "03-8765-4321",
-    company: "HawkOne" as CompanyType
-  }
-];
 
 const Index = () => {
 
@@ -76,9 +40,51 @@ const Index = () => {
   const [siteType, setSiteType] = useState<SiteType | "all">("all");
   const [minSoilAmount, setMinSoilAmount] = useState("");
   const [soilType, setSoilType] = useState("all");
+  const [sites, setSites] = useState<any[]>([]); // State for fetched sites
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState<string | null>(null); // Error state
   const geocoderRef = useRef(null);
   const mapRef = useRef(null);
-  
+
+  // Fetch sites from GAS
+  useEffect(() => {
+    const fetchSites = () => {
+      console.log('fetching sites...');
+      setLoading(true);
+      setError(null);
+      google.script.run
+        .withSuccessHandler((response: FetchSitesResponse) => {
+          console.log('Received response from GAS:', response);
+          if (!response) {
+            console.error('Received null response from GAS');
+            setError('Received null response from the server.');
+            setLoading(false);
+            return;
+          }          
+          if (response && typeof response === 'object' && response.success !== undefined) {
+            if (response.success) {
+              setSites(response.sites);
+              console.log('Sites state updated:', response.sites); // Log updated sites
+            } else {
+              setError(response.message || 'Failed to fetch sites.');
+              console.error('Fetch error message:', response.message); // Log error message
+            }
+          } else {
+            console.error('Unexpected response format:', response); // Log unexpected formats
+            setError('Unexpected response from the server.');
+          }
+          setLoading(false);
+        })
+        .withFailureHandler((err) => {
+          console.error("Error fetching sites:", err);
+          setError("An error occurred while fetching sites.");
+          setLoading(false);
+        })
+        .fetchSites(); // GAS関数
+    };
+    fetchSites();
+  }, []);
+
 const handleMapSearch = async () => {
   if (!mapSearch) return;
     try {
@@ -133,7 +139,7 @@ const handleMapSearch = async () => {
         </div>
 
         <MapContainer 
-          sites={sampleSites}
+          sites={sites}
           company={company}
           setCompany={setCompany}
           siteType={siteType}
