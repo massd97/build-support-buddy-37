@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { CompanyType, SiteType } from "@/types/site";
 import SiteRegistrationModal from "@/components/SiteRegistrationModal";
@@ -20,15 +20,7 @@ declare const google: {
   };
 };
 
-interface FetchSitesResponse {
-  success: boolean;
-  message: string;
-  sites: any[]; // Update the type of `sites` based on your data structure if needed
-}
-
 const Index = () => {
-
-  console.log('Index.tsx requiered');
   // Modal state controls
   const [showSiteModal, setShowSiteModal] = useState(false);
   const [showSitesList, setShowSitesList] = useState(false);
@@ -43,83 +35,66 @@ const Index = () => {
   const [sites, setSites] = useState<any[]>([]); // State for fetched sites
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
-  const geocoderRef = useRef(null);
-  const mapRef = useRef(null);
 
   // Fetch sites from GAS
   useEffect(() => {
-    const fetchSites = () => {
-      console.log('fetching sites...');
-      setLoading(true);
-      setError(null);
-      google.script.run
-        .withSuccessHandler((response: FetchSitesResponse) => {
-          console.log('Received response from GAS:', response);
-          if (!response) {
-            console.error('Received null response from GAS');
-            setError('Received null response from the server.');
-            setLoading(false);
-            return;
-          }          
-          if (response && typeof response === 'object' && response.success !== undefined) {
-            if (response.success) {
-              setSites(response.sites);
-              console.log('Sites state updated:', response.sites); // Log updated sites
-            } else {
-              setError(response.message || 'Failed to fetch sites.');
-              console.error('Fetch error message:', response.message); // Log error message
-            }
-          } else {
-            console.error('Unexpected response format:', response); // Log unexpected formats
-            setError('Unexpected response from the server.');
+    console.log('Fetching sites...');
+    setLoading(true);
+    setError(null);
+    
+    google.script.run
+      .withSuccessHandler((response: any) => {
+        console.log('Response from GAS:', response);
+        if (response.success) {
+          setSites(response.sites);
+          if (response.sites.length === 0) {
+            toast.info("現場データがありません");
           }
-          setLoading(false);
-        })
-        .withFailureHandler((err) => {
-          console.error("Error fetching sites:", err);
-          setError("An error occurred while fetching sites.");
-          setLoading(false);
-        })
-        .fetchSites(); // GAS関数
-    };
-    fetchSites();
+        } else {
+          setError(response.message || "Failed to fetch sites.");
+          toast.error(response.message || "現場データの取得に失敗しました");
+        }
+        setLoading(false);
+      })
+      .withFailureHandler((err) => {
+        console.error("Error fetching sites:", err);
+        setError("現場データの取得中にエラーが発生しました");
+        toast.error("現場データの取得中にエラーが発生しました");
+        setLoading(false);
+      })
+      .fetchSites();
   }, []);
 
-const handleMapSearch = async () => {
-  if (!mapSearch) return;
+  const handleMapSearch = async () => {
+    if (!mapSearch) return;
     try {
-      const geocoder = geocoderRef.current || new window.google.maps.Geocoder();
-      geocoder.geocode({ address: mapSearch }, (results, status) => {
-        if (status === "OK") {
-          console.log(`address: ${mapSearch}, results: ${JSON.stringify(results)}, status: ${status}`);
-          // `results` contains an array of matching locations.
-          const { geometry } = results[0]; // usually the first result is the best match
-          // Extract the coordinates
-          const { lat, lng } = geometry.location;
-
-          console.log(`lat: ${lat()}, lng: ${lng()}`);
-  
-          // Center the map on this location
-          // Assuming you have a reference to the map instance:
-          mapRef.current.panTo({ lat: lat(), lng: lng() });
-          
-          // Optionally place a marker there:
-          new window.google.maps.Marker({
-            position: { lat: lat(), lng: lng() },
-            map: mapRef.current,
-            title: mapSearch,
-          });
-  
-          toast.success("検索完了");
-        } else {
-          toast.error("位置情報が見つかりませんでした");
-        }
-      });
+      google.script.run
+        .withSuccessHandler((response: any) => {
+          if (response.success) {
+            setSites(response.sites);
+            toast.success("検索完了");
+          } else {
+            toast.error(response.message || "検索に失敗しました");
+          }
+        })
+        .withFailureHandler((error) => {
+          console.error("Search error:", error);
+          toast.error("検索中にエラーが発生しました");
+        })
+        .searchSitesByAddress(mapSearch);
     } catch (error) {
-      console.log(`Error: ${error.message}`);
-      toast.error(`検索中にエラーが発生しました`);
+      console.error("Search error:", error);
+      toast.error("検索中にエラーが発生しました");
     }
   };
+
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="flex items-center justify-center min-h-screen text-red-500">{error}</div>;
+  }
 
   return (
     <div className="min-h-screen pb-20">

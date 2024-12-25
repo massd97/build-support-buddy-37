@@ -35,30 +35,64 @@ function registerSite(site) {
 
 //現場取得
 function fetchSites() {
-  const sheet = SpreadsheetApp.openById(PropertiesService.getScriptProperties().getProperty('SHEET_ID')).getSheetByName('Sites');
-  const data = sheet.getDataRange().getValues();
-  const headers = data.shift();
-  const sites = data.map(row => {
-    const site = {};
-    headers.forEach((header, index) => {
-      site[header] = row[index];
+  try {
+    // Retrieve the Google Sheet
+    const sheet = SpreadsheetApp.openById(PropertiesService.getScriptProperties().getProperty('SHEET_ID')).getSheetByName('Sites');
+    if (!sheet) {
+      console.error('Sheet not found');
+      return { success: false, message: 'Sheet not found', sites: [] };
+    }
+
+    const data = sheet.getDataRange().getValues();
+    if (data.length < 2) {
+      console.log('No data found in sheet');
+      return { success: true, sites: [] };
+    }
+
+    // Extract headers and rows
+    const headers = data[0];
+    const rows = data.slice(1);
+
+    // Map rows to site objects with proper type conversion
+    const sites = rows.map(row => {
+      const site = {};
+      headers.forEach((header, index) => {
+        // Convert latitude and longitude to numbers
+        if (header === 'latitude' || header === 'longitude') {
+          site[header] = Number(row[index]) || 0;
+        } else {
+          site[header] = row[index] || '';
+        }
+        console.log(`${header}: ${site[header]}`);
+      });
+      return site;
     });
-    return site;
-  });
-  return sites;
+
+    console.log(`Total sites found: ${sites.length}`);
+    return { success: true, sites };
+  } catch (error) {
+    console.error("Error in fetchSites:", error);
+    return { success: false, message: error.toString(), sites: [] };
+  }
 }
 
 //現場検索
 function searchSitesByAddress(addressQuery) {
   const sites = fetchSites();
-  const filteredSites = sites.filter(site => site.address.includes(addressQuery));
-  return filteredSites;
+  if (!sites.success) return sites;
+  
+  const filteredSites = sites.sites.filter(site => 
+    site.address && site.address.includes(addressQuery)
+  );
+  return { success: true, sites: filteredSites };
 }
 
 // 住所以外でのフィルタリング
 function filterSites(criteria) {
   const sites = fetchSites();
-  const filteredSites = sites.filter(site => {
+  if (!sites.success) return sites;
+  
+  const filteredSites = sites.sites.filter(site => {
     for (let key in criteria) {
       if (site[key] !== criteria[key]) {
         return false;
@@ -66,12 +100,10 @@ function filterSites(criteria) {
     }
     return true;
   });
-  return filteredSites;
+  return { success: true, sites: filteredSites };
 }
 
-
 function test() {
-  const numbers = [80, 40, 80, 30, 60];
-  const result = numbers.filter(number => 50 >= number);
-  console.log(result);
+  const result = fetchSites();
+  console.log(JSON.stringify(result, null, 2));
 }
