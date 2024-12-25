@@ -8,12 +8,14 @@ import MapSearch from "@/components/MapSearch";
 import ActionButtons from "@/components/ActionButtons";
 import MapContainer from "@/components/MapContainer";
 
+// Update the Google Script type declaration
 declare const google: {
   script: {
     run: {
       withSuccessHandler: <T>(callback: (response: T) => void) => {
         withFailureHandler: (callback: (error: any) => void) => {
           fetchSites: () => void;
+          searchSitesByAddress: (address: string) => void;
         };
       };
     };
