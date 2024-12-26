@@ -15,39 +15,17 @@ const MapComponent = ({ sites }: MapComponentProps) => {
   const [selectedSite, setSelectedSite] = useState<Site | null>(null);
   const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
-  // Map configuration
+  
   const center = { lat: 35.6762, lng: 139.6503 }; // Tokyo center
   const mapContainerStyle = {
     width: '100%',
     height: '800px'
   };
 
-  // Fetch sites from GAS when the component mounts
-  // React.useEffect(() => {
-  //   google.script.run
-  //     .withSuccessHandler((response) => {
-  //       if (response.success) {
-  //         setSites(response.sites);
-  //       } else {
-  //         toast.error(response.message);
-  //       }
-  //     })
-  //     .withFailureHandler((error) => {
-  //       toast.error("Failed to fetch sites.");
-  //       console.error(error);
-  //     })
-  //     .fetchSites(); // Ensure fetchSites is a backend GAS function
-  // }, []);
-
-  // if (!apiKey) {
-  //   return <div>マップロード中...</div>;
-  // }
-
   const handleMapLoad = (map) => {
     mapRef.current = map;
   };
 
-  // Marker icon configuration
   const getMarkerIcon = (site: Site) => ({
     path: window.google?.maps.SymbolPath.CIRCLE,
     fillColor: site.siteType === "客土" ? "#ef4444" : "#3b82f6",

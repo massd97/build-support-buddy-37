@@ -39,6 +39,13 @@ const SiteInfoWindow = ({ site }: SiteInfoWindowProps) => {
       <TransactionRegistrationModal 
         open={showTransactionModal}
         onOpenChange={setShowTransactionModal}
+        siteData={{
+          siteName: site.siteName,
+          address: site.address,
+          contactPerson: site.contactPerson,
+          soilVolume: site.soilAmount,
+          email: site.email,
+        }}
       />
     </>
   );
