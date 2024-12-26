@@ -1,73 +1,80 @@
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 
 interface Site {
   id: string;
-  name: string;
+  siteName: string;
   address: string;
   contactPerson: string;
-  soilAmount: string;
+  soilVolume: string;
   soilType: string;
   siteType: "残土" | "客土";
   lat: number;
   lng: number;
-  phone: string;
+  email: string;
 }
 
 interface SiteDetailsDialogProps {
   site: Site | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onTransactionClick: () => void;
+  onTransactionClick: (site: Site) => void;
+  onEditClick: (site: Site) => void; // Ensure this is defined
 }
 
-const SiteDetailsDialog = ({
-  site,
-  open,
-  onOpenChange,
-  onTransactionClick,
-}: SiteDetailsDialogProps) => {
-  if (!site) return null;
+interface SiteDetailsDialogProps {
+  site: Site | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onTransactionClick: (site: Site) => void; // Update to accept a Site parameter
+}
 
+const SiteDetailsDialog = ({ site, open, onOpenChange, onTransactionClick, onEditClick }: SiteDetailsDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] z-[60]">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>現場詳細情報</DialogTitle>
-          <DialogDescription>
-            現場の詳細情報を確認できます
-          </DialogDescription>
+          <DialogTitle>現場詳細</DialogTitle>
         </DialogHeader>
-        <div className="p-4 space-y-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <h3 className="font-bold text-lg">{site.name}</h3>
-              <Badge variant={site.siteType === "残土" ? "destructive" : "default"}>
-                {site.siteType}
-              </Badge>
-            </div>
-            <div className="space-y-2">
-              <p><span className="font-semibold">住所:</span> {site.address}</p>
-              <p><span className="font-semibold">残土の量:</span> {site.soilAmount}</p>
-              <p><span className="font-semibold">土質:</span> {site.soilType}</p>
-              <p><span className="font-semibold">担当者:</span> {site.contactPerson}</p>
-              <p><span className="font-semibold">連絡先:</span> {site.phone}</p>
-              <p><span className="font-semibold">位置情報:</span> {site.lat}, {site.lng}</p>
-            </div>
-            <Button 
-              className="w-full mt-4"
-              onClick={onTransactionClick}
-            >
-              取引を申請
+        <div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>項目</TableHead>
+                <TableHead>詳細</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell>現場名</TableCell>
+                <TableCell>{site?.siteName || "未設定"}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>住所</TableCell>
+                <TableCell>{site?.address || "未設定"}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>担当者</TableCell>
+                <TableCell>{site?.contactPerson || "未設定"}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>土の量</TableCell>
+                <TableCell>{site?.soilVolume || 0}㎥</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+          <Button onClick={() => site && onTransactionClick(site)} className="w-1/2"
+            >取引申請
+          </Button>
+          <Button onClick={() => site && onEditClick(site)} className="w-1/2">
+              編集
             </Button>
-          </div>
         </div>
       </DialogContent>
     </Dialog>

@@ -15,14 +15,14 @@ const SiteInfoWindow = ({ site }: SiteInfoWindowProps) => {
     <>
       <div className="p-2 min-w-[200px]">
         <div className="flex items-center gap-2 mb-2">
-          <h3 className="font-bold text-lg">{site.name}</h3>
+          <h3 className="font-bold text-lg">{site.siteName}</h3>
           <Badge variant={site.siteType === "残土" ? "destructive" : "default"}>
             {site.siteType}
           </Badge>
         </div>
         <p><span className="font-semibold">住所:</span> {site.address}</p>
         <p><span className="font-semibold">担当者:</span> {site.contactPerson}</p>
-        <p><span className="font-semibold">連絡先:</span> {site.phone}</p>
+        <p><span className="font-semibold">連絡先:</span> {site.email}</p>
         <p><span className="font-semibold">担当会社:</span> {site.company}</p>
         <Button 
           className="w-full mt-4"

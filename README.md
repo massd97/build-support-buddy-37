@@ -25,7 +25,7 @@ This project uses Supabase as the backend. To set up the backend:
      soil_type text not null,
      site_type text not null,
      contact_person text not null,
-     phone text not null,
+     email text not null,
      company text not null,
      created_at timestamp with time zone default timezone('utc'::text, now()) not null
    );

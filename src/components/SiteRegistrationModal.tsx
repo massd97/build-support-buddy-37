@@ -39,7 +39,7 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
   const [formData, setFormData] = useState({
     siteName: "",
     address: "",
-    managerName: "",
+    contactPerson: "",
     email: "",
     startDate: "",
     endDate: "",
@@ -75,6 +75,7 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
         .withSuccessHandler(() => {
           alert("登録成功！");
           onOpenChange(false);
+          window.location.href = window.location.href;
         })
         .withFailureHandler((error) => {
           console.error("Registration failed:", error);
@@ -98,7 +99,7 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
   const commonFields = [
     { id: "siteName", label: "現場名", type: "text", required: true },
     { id: "address", label: "住所", type: "text", required: true },
-    { id: "managerName", label: "担当者", type: "text", required: true },
+    { id: "contactPerson", label: "担当者", type: "text", required: true },
     { id: "email", label: "連絡先", type: "email", required: true },
     { id: "startDate", label: "開始日", type: "date" },
     { id: "endDate", label: "終了日", type: "date" },
@@ -117,7 +118,14 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
           },
           { id: "previousUse", label: "従前の用途", type: "text" },
         ]
-      : [{ id: "requiredSoilVolume", label: "必要土量", type: "number" }];
+      : [{ id: "requiredSoilVolume", label: "必要土量", type: "number" },
+        {
+          id: "soilType",
+          label: "必要となる土の土質",
+          type: "dropdown",
+          options: ["黒土", "赤土", "砂質", "粘土質", "その他"],
+        },
+      ];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -152,7 +160,7 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
             />
           ))}
 
-          <div className="grid gap-2">
+          {/* <div className="grid gap-2">
             <Label htmlFor="image">画像添付</Label>
             <Input
               id="image"
@@ -160,7 +168,7 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
               accept="image/*"
               onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
             />
-          </div>
+          </div> */}
 
           <div className="grid gap-2">
             <Label htmlFor="company">施工会社</Label>

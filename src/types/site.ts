@@ -3,7 +3,7 @@ export type SiteType = "残土" | "客土";
 
 export interface Site {
   id: string;
-  name: string;
+  siteName: string;
   address: string;
   lat: number;
   lng: number;
@@ -11,6 +11,6 @@ export interface Site {
   soilType: string;
   siteType: SiteType;
   contactPerson: string;
-  phone: string;
+  email: string;
   company: CompanyType;
 }

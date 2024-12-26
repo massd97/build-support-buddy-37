@@ -64,7 +64,7 @@ const MapComponent = ({ sites }: MapComponentProps) => {
   const handleMarkerClick = (site: Site) => {
     setSelectedSite(site);
     setSelectedMarkerId(site.id);
-    toast.info(`${site.name} - ${site.siteType}`);
+    toast.info(`${site.siteName} - ${site.siteType}`);
   };
 
   return (

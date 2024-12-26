@@ -11,7 +11,7 @@ function registerSite(site) {
   // Assuming the sheet has headers: ID, Name, Address, Latitude, Longitude, Company, SiteType, etc.
   const newRow = [
     Utilities.getUuid(),
-    site.name,
+    site.siteName,
     site.siteType,
     site.address,
     site.latitude,
