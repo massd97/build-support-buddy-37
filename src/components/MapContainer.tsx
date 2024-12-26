@@ -7,6 +7,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface MapContainerProps {
   sites: Site[];
@@ -32,6 +33,7 @@ const MapContainer = ({
   setSoilType
 }: MapContainerProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const filteredSites = sites.filter(site => {
     if (company !== "all" && site.company !== company) return false;
@@ -42,10 +44,10 @@ const MapContainer = ({
   });
 
   return (
-    <div className="w-full h-[700px] lg:h-[800px] mb-6 rounded-lg overflow-hidden shadow-lg relative">
-      <div className="absolute top-0 left-0 right-20 z-40">
+    <div className="w-full h-[600px] lg:h-[800px] mb-6 rounded-lg overflow-hidden shadow-lg relative">
+      <div className="absolute top-0 left-0 right-0 z-40">
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-          <div className="bg-white/70 p-4">
+          <div className="bg-white/70 backdrop-blur-sm p-2 sm:p-4">
             <CollapsibleTrigger asChild>
               <Button variant="ghost" className="w-full flex items-center justify-between mb-2">
                 フィルター
@@ -72,10 +74,10 @@ const MapContainer = ({
         </Collapsible>
       </div>
       
-      <div className="absolute bottom-6 left-2 sm:left-2 z-30">
+      <div className={`absolute ${isMobile ? 'bottom-20' : 'bottom-6'} left-2 sm:left-2 z-30`}>
         <CompanyLegend />
       </div>
-      <div className="absolute bottom-32 left-6 sm:left-2 z-30">
+      <div className={`absolute ${isMobile ? 'bottom-44' : 'bottom-32'} left-6 sm:left-2 z-30`}>
         <SiteTypeLegend />
       </div>
       

@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Site } from '@/types/site';
 import SiteInfoWindow from './SiteInfoWindow';
 import { ApiKeyContext } from '../contexts/ApiKeyContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface MapComponentProps {
   sites: Site[];
@@ -15,17 +16,25 @@ const MapComponent = ({ sites }: MapComponentProps) => {
   const [selectedSite, setSelectedSite] = useState<Site | null>(null);
   const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
+  const isMobile = useIsMobile();
   
   const center = { lat: 35.6762, lng: 139.6503 }; // Tokyo center
   const mapContainerStyle = {
     width: '100%',
-    height: '800px'
+    height: isMobile ? '600px' : '800px'
   };
 
   const handleMapLoad = (map: google.maps.Map) => {
     console.log('Map loaded');
     mapRef.current = map;
     setMapLoaded(true);
+    
+    // Set different zoom levels for mobile and desktop
+    if (isMobile) {
+      map.setZoom(13);
+    } else {
+      map.setZoom(11);
+    }
   };
 
   const getMarkerIcon = (site: Site) => ({
@@ -59,6 +68,12 @@ const MapComponent = ({ sites }: MapComponentProps) => {
     
     console.log('Setting selected marker ID:', site.id);
     setSelectedMarkerId(site.id);
+
+    // Adjust map center and zoom for mobile
+    if (isMobile && mapRef.current) {
+      mapRef.current.setCenter(position);
+      mapRef.current.setZoom(15);
+    }
     
     toast.info(`${site.siteName} - ${site.siteType}`);
   };
@@ -77,13 +92,14 @@ const MapComponent = ({ sites }: MapComponentProps) => {
       <GoogleMap
         mapContainerStyle={mapContainerStyle}
         center={center}
-        zoom={11}
+        zoom={isMobile ? 13 : 11}
         onLoad={handleMapLoad}
         options={{
           zoomControl: true,
           streetViewControl: false,
           mapTypeControl: false,
           fullscreenControl: true,
+          gestureHandling: 'greedy', // Makes it easier to navigate on mobile
         }}
       >
         {mapLoaded && sites.map((site) => (
