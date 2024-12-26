@@ -42,14 +42,14 @@ const MapComponent = ({ sites }: MapComponentProps) => {
   const handleMarkerClick = (site: Site) => {
     // Convert latitude and longitude to numbers
     const position = {
-      lat: typeof site.latitude === 'string' ? parseFloat(site.latitude) : site.latitude,
-      lng: typeof site.longitude === 'string' ? parseFloat(site.longitude) : site.longitude
+      lat: typeof site.lat === 'string' ? parseFloat(site.lat) : site.lat,
+      lng: typeof site.lng === 'string' ? parseFloat(site.lng) : site.lng
     };
 
     setSelectedSite({
       ...site,
-      latitude: position.lat,
-      longitude: position.lng
+      lat: position.lat,
+      lng: position.lng
     });
     setSelectedMarkerId(site.id);
     toast.info(`${site.siteName} - ${site.siteType}`);
@@ -76,8 +76,8 @@ const MapComponent = ({ sites }: MapComponentProps) => {
           <Marker
             key={site.id}
             position={{ 
-              lat: typeof site.latitude === 'string' ? parseFloat(site.latitude) : site.latitude,
-              lng: typeof site.longitude === 'string' ? parseFloat(site.longitude) : site.longitude
+              lat: typeof site.lat === 'string' ? parseFloat(site.lat) : site.lat,
+              lng: typeof site.lng === 'string' ? parseFloat(site.lng) : site.lng
             }}
             onClick={() => handleMarkerClick(site)}
             icon={getMarkerIcon(site)}
@@ -87,8 +87,8 @@ const MapComponent = ({ sites }: MapComponentProps) => {
         {selectedMarkerId && selectedSite && (
           <InfoWindow
             position={{ 
-              lat: typeof selectedSite.latitude === 'string' ? parseFloat(selectedSite.latitude) : selectedSite.latitude,
-              lng: typeof selectedSite.longitude === 'string' ? parseFloat(selectedSite.longitude) : selectedSite.longitude
+              lat: typeof selectedSite.lat === 'string' ? parseFloat(selectedSite.lat) : selectedSite.lat,
+              lng: typeof selectedSite.lng === 'string' ? parseFloat(selectedSite.lng) : selectedSite.lng
             }}
             onCloseClick={() => {
               setSelectedMarkerId(null);
