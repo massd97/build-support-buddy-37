@@ -8,6 +8,7 @@ declare namespace google {
           searchSitesByAddress: (address: string) => void;
           registerSite: (site: any) => void;
           updateSite: (site: any) => void;
+          fetchMatchingSites: () => void;
         };
       }
 
@@ -17,6 +18,7 @@ declare namespace google {
           searchSitesByAddress: (address: string) => void;
           registerSite: (site: any) => void;
           updateSite: (site: any) => void;
+          fetchMatchingSites: () => void;
         };
       }
 
@@ -26,6 +28,7 @@ declare namespace google {
         searchSitesByAddress: (address: string) => void;
         registerSite: (site: any) => void;
         updateSite: (site: any) => void;
+        fetchMatchingSites: () => void;
       };
     }
   }
