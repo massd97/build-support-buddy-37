@@ -1,4 +1,3 @@
-// Code.gs
 function doGet() {
   return HtmlService.createHtmlOutputFromFile('index')
     .setTitle('残土マッチ')
@@ -8,7 +7,6 @@ function doGet() {
 //現場登録
 function registerSite(site) {
   const sheet = SpreadsheetApp.openById(PropertiesService.getScriptProperties().getProperty('SHEET_ID')).getSheetByName('Sites');
-  // Assuming the sheet has headers: ID, Name, Address, Latitude, Longitude, Company, SiteType, etc.
   const newRow = [
     Utilities.getUuid(),
     site.siteName,
@@ -36,7 +34,6 @@ function registerSite(site) {
 //現場取得
 function fetchSites() {
   try {
-    // Retrieve the Google Sheet
     const sheet = SpreadsheetApp.openById(PropertiesService.getScriptProperties().getProperty('SHEET_ID')).getSheetByName('Sites');
     if (!sheet) {
       console.error('Sheet not found');
@@ -49,15 +46,12 @@ function fetchSites() {
       return { success: true, sites: [] };
     }
 
-    // Extract headers and rows
     const headers = data[0];
     const rows = data.slice(1);
 
-    // Map rows to site objects with proper type conversion
     const sites = rows.map(row => {
       const site = {};
       headers.forEach((header, index) => {
-        // Convert latitude and longitude to numbers
         if (header === 'latitude' || header === 'longitude') {
           site[header] = Number(row[index]) || 0;
         } else {
@@ -106,4 +100,46 @@ function filterSites(criteria) {
 function test() {
   const result = fetchSites();
   console.log(JSON.stringify(result, null, 2));
+}
+
+function fetchMatchingSites() {
+  try {
+    const sheet = SpreadsheetApp.openById(PropertiesService.getScriptProperties().getProperty('SHEET_ID')).getSheetByName('Sites');
+    if (!sheet) {
+      console.error('Sheet not found');
+      return { success: false, message: 'Sheet not found', sites: [] };
+    }
+
+    const data = sheet.getDataRange().getValues();
+    if (data.length < 2) {
+      console.log('No data found in sheet');
+      return { success: true, sites: [] };
+    }
+
+    const headers = data[0];
+    const rows = data.slice(1);
+
+    const sites = rows.map(row => {
+      const site = {};
+      headers.forEach((header, index) => {
+        if (header === 'latitude' || header === 'longitude') {
+          site[header] = Number(row[index]) || 0;
+        } else {
+          site[header] = row[index] || '';
+        }
+      });
+      return site;
+    });
+
+    const matchingSites = sites.filter(site => {
+      // Add your matching logic here
+      return true; // Currently returns all sites, implement your matching logic
+    });
+
+    console.log(`Total matching sites found: ${matchingSites.length}`);
+    return { success: true, sites: matchingSites };
+  } catch (error) {
+    console.error("Error in fetchMatchingSites:", error);
+    return { success: false, message: error.toString(), sites: [] };
+  }
 }

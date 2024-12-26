@@ -7,6 +7,7 @@ import TransactionFeed from "@/components/TransactionFeed";
 import MapSearch from "@/components/MapSearch";
 import ActionButtons from "@/components/ActionButtons";
 import MapContainer from "@/components/MapContainer";
+import MatchingSitesList from "@/components/MatchingSitesList";
 import { fetchSitesFromGAS, searchSitesByAddressGAS } from "@/utils/gas";
 
 const Index = () => {
@@ -14,6 +15,7 @@ const Index = () => {
   const [showSiteModal, setShowSiteModal] = useState(false);
   const [showSitesList, setShowSitesList] = useState(false);
   const [showTransactionFeed, setShowTransactionFeed] = useState(false);
+  const [showMatchingSites, setShowMatchingSites] = useState(false);
   
   // Map related states
   const [mapSearch, setMapSearch] = useState("");
@@ -109,11 +111,20 @@ const Index = () => {
           setSoilType={setSoilType}
         />
 
-        <ActionButtons
-          setShowSiteModal={setShowSiteModal}
-          setShowSitesList={setShowSitesList}
-          setShowTransactionFeed={setShowTransactionFeed}
-        />
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4">
+          <Button onClick={() => setShowSiteModal(true)}>
+            新規登録
+          </Button>
+          <Button onClick={() => setShowSitesList(true)}>
+            現場一覧
+          </Button>
+          <Button onClick={() => setShowMatchingSites(true)}>
+            マッチング現場
+          </Button>
+          <Button onClick={() => setShowTransactionFeed(true)}>
+            取引履歴
+          </Button>
+        </div>
       </div>
 
       <SiteRegistrationModal 
@@ -123,6 +134,10 @@ const Index = () => {
       <AvailableSitesList 
         open={showSitesList}
         onOpenChange={setShowSitesList}
+      />
+      <MatchingSitesList
+        open={showMatchingSites}
+        onOpenChange={setShowMatchingSites}
       />
       <TransactionFeed 
         open={showTransactionFeed}
