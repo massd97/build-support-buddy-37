@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { FormField } from "./site-registration/SiteFormFields";
 import { SiteTypeRadio } from "./site-registration/SiteTypeRadio";
+import { ScrollArea } from "./ui/scroll-area";
 
 declare const google: {
   script: {
@@ -129,62 +130,56 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto" style={{ zIndex: 9998 }}>
-        <DialogHeader>
-          <DialogTitle>現場新規登録（残土/客土）</DialogTitle>
-          <DialogDescription>
-            登録する現場の種類を選択してください
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-[600px] h-[90vh] p-0" style={{ zIndex: 9998 }}>
+        <ScrollArea className="h-full p-6">
+          <DialogHeader>
+            <DialogTitle>現場新規登録（残土/客土）</DialogTitle>
+            <DialogDescription>
+              登録する現場の種類を選択してください
+            </DialogDescription>
+          </DialogHeader>
 
-        <div className="grid gap-4 py-4">
-          <SiteTypeRadio value={siteType} onChange={setSiteType} />
+          <div className="grid gap-4 py-4">
+            <SiteTypeRadio value={siteType} onChange={setSiteType} />
 
-          {commonFields.map((field) => (
-            <FormField
-              key={field.id}
-              field={field}
-              formData={formData}
-              handleInputChange={handleInputChange}
-            />
-          ))}
+            {commonFields.map((field) => (
+              <FormField
+                key={field.id}
+                field={field}
+                formData={formData}
+                handleInputChange={handleInputChange}
+              />
+            ))}
 
-          {siteTypeSpecificFields.map((field) => (
-            <FormField
-              key={field.id}
-              field={field}
-              formData={formData}
-              handleInputChange={handleInputChange}
-              handleDropdownChange={handleDropdownChange}
-              setSoilType={setSoilType}
-            />
-          ))}
+            {siteTypeSpecificFields.map((field) => (
+              <FormField
+                key={field.id}
+                field={field}
+                formData={formData}
+                handleInputChange={handleInputChange}
+                handleDropdownChange={handleDropdownChange}
+                setSoilType={setSoilType}
+              />
+            ))}
 
-          {/* <div className="grid gap-2">
-            <Label htmlFor="image">画像添付</Label>
-            <Input
-              id="image"
-              type="file"
-              accept="image/*"
-              onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
-            />
-          </div> */}
-
-          <div className="grid gap-2">
-            <Label htmlFor="company">施工会社</Label>
-            <Select onValueChange={(value) => setCompany(value as "OHD" | "Meldia" | "HawkOne")}>
-              <SelectTrigger>
-                <SelectValue placeholder="施工会社を選択してください" />
-              </SelectTrigger>
-              <SelectContent style={{ zIndex: 99999 }}>
-                <SelectItem value="OHD">OHD</SelectItem>
-                <SelectItem value="Meldia">Meldia</SelectItem>
-                <SelectItem value="HawkOne">HawkOne</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="grid gap-2">
+              <Label htmlFor="company">施工会社</Label>
+              <Select onValueChange={(value) => setCompany(value as "OHD" | "Meldia" | "HawkOne")}>
+                <SelectTrigger>
+                  <SelectValue placeholder="施工会社を選択してください" />
+                </SelectTrigger>
+                <SelectContent style={{ zIndex: 99999 }}>
+                  <SelectItem value="OHD">OHD</SelectItem>
+                  <SelectItem value="Meldia">Meldia</SelectItem>
+                  <SelectItem value="HawkOne">HawkOne</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-        </div>
-        <Button className="w-full" onClick={handleSubmit}>登録</Button>
+          <div className="sticky bottom-0 bg-background p-4 border-t">
+            <Button className="w-full" onClick={handleSubmit}>登録</Button>
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
