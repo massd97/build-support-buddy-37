@@ -22,8 +22,10 @@ const MapComponent = ({ sites }: MapComponentProps) => {
     height: '800px'
   };
 
-  const handleMapLoad = (map) => {
+  const handleMapLoad = (map: google.maps.Map) => {
+    console.log('Map loaded');
     mapRef.current = map;
+    setMapLoaded(true);
   };
 
   const getMarkerIcon = (site: Site) => ({
@@ -40,6 +42,7 @@ const MapComponent = ({ sites }: MapComponentProps) => {
   });
 
   const handleMarkerClick = (site: Site) => {
+    console.log('Marker clicked:', site);
     // Convert latitude and longitude to numbers
     const position = {
       lat: typeof site.lat === 'string' ? parseFloat(site.lat) : site.lat,
@@ -55,10 +58,16 @@ const MapComponent = ({ sites }: MapComponentProps) => {
     toast.info(`${site.siteName} - ${site.siteType}`);
   };
 
+  console.log('Selected site:', selectedSite);
+  console.log('Selected marker ID:', selectedMarkerId);
+
   return (
     <LoadScript 
       googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ''}
-      onLoad={() => setMapLoaded(true)}
+      onLoad={() => {
+        console.log('Script loaded');
+        setMapLoaded(true);
+      }}
     >
       <GoogleMap
         mapContainerStyle={mapContainerStyle}
