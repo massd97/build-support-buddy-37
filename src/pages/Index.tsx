@@ -7,28 +7,9 @@ import TransactionFeed from "@/components/TransactionFeed";
 import MapSearch from "@/components/MapSearch";
 import ActionButtons from "@/components/ActionButtons";
 import MapContainer from "@/components/MapContainer";
-
-declare const google: {
-  script: {
-    run: {
-      withSuccessHandler: <T>(callback: (response: T) => void) => {
-        withFailureHandler: (callback: (error: any) => void) => {
-          fetchSites: () => void;
-        };
-      };
-    };
-  };
-};
-
-interface FetchSitesResponse {
-  success: boolean;
-  message?: string;
-  sites: any[]; // Update the type of `sites` based on your data structure if needed
-}
+import { fetchSitesFromGAS, searchSitesByAddressGAS } from "@/utils/gas";
 
 const Index = () => {
-
-  console.log('Index.tsx requiered');
   // Modal state controls
   const [showSiteModal, setShowSiteModal] = useState(false);
   const [showSitesList, setShowSitesList] = useState(false);
@@ -40,93 +21,62 @@ const Index = () => {
   const [siteType, setSiteType] = useState<SiteType | "all">("all");
   const [minSoilAmount, setMinSoilAmount] = useState("");
   const [soilType, setSoilType] = useState("all");
-  const [sites, setSites] = useState<any[]>([]); // State for fetched sites
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState<string | null>(null); // Error state
+  const [sites, setSites] = useState<any[]>([]); 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const geocoderRef = useRef(null);
   const mapRef = useRef(null);
 
-  // Fetch sites from GAS
   useEffect(() => {
-    const fetchSites = () => {
-      console.log('fetching sites...');
-      setLoading(true);
-      setError(null);
-      const decodeBase64 = (base64: string): string => {
-        const binaryString = atob(base64);
-        const binaryData = Uint8Array.from(binaryString, char => char.charCodeAt(0));
-        return new TextDecoder("utf-8").decode(binaryData);
-      };
-      google.script.run
-        .withSuccessHandler((compressedResponse: string) => {
-          console.log('Received compressed response from GAS:', compressedResponse);
-          const decodeString = decodeBase64(compressedResponse);
-          console.log('Decoded response from GAS:', decodeString);
-          const response = JSON.parse(decodeString) as FetchSitesResponse;
-          console.log('Received decoded response from GAS:', response);
-          if (!response) {
-            console.error('Received null response from GAS');
-            setError('Received null response from the server.');
-            setLoading(false);
-            return;
-          }          
-          if (response && typeof response === 'object' && response.success !== undefined) {
-            if (response.success) {
-              setSites(response.sites);
-              console.log('Sites state updated:', response.sites); // Log updated sites
-            } else {
-              setError(response.message || 'Failed to fetch sites.');
-              console.error('Fetch error message:', response.message); // Log error message
-            }
-          } else {
-            console.error('Unexpected response format:', response); // Log unexpected formats
-            setError('Unexpected response from the server.');
-          }
-          setLoading(false);
-        })
-        .withFailureHandler((err) => {
-          console.error("Error fetching sites:", err);
-          setError("An error occurred while fetching sites.");
-          setLoading(false);
-        })
-        .fetchSites(); // GAS関数
+    const loadSites = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchSitesFromGAS();
+        setSites(response.sites);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+        toast.error("サイトの読み込み中にエラーが発生しました");
+      } finally {
+        setLoading(false);
+      }
     };
-    fetchSites();
+    loadSites();
   }, []);
 
-const handleMapSearch = async () => {
-  if (!mapSearch) return;
+  const handleMapSearch = async () => {
+    if (!mapSearch) return;
+    
     try {
       const geocoder = geocoderRef.current || new window.google.maps.Geocoder();
-      geocoder.geocode({ address: mapSearch }, (results, status) => {
-        if (status === "OK") {
-          console.log(`address: ${mapSearch}, results: ${JSON.stringify(results)}, status: ${status}`);
-          // `results` contains an array of matching locations.
-          const { geometry } = results[0]; // usually the first result is the best match
-          // Extract the coordinates
-          const { lat, lng } = geometry.location;
-
-          console.log(`lat: ${lat()}, lng: ${lng()}`);
-  
-          // Center the map on this location
-          // Assuming you have a reference to the map instance:
-          mapRef.current.panTo({ lat: lat(), lng: lng() });
-          
-          // Optionally place a marker there:
-          new window.google.maps.Marker({
-            position: { lat: lat(), lng: lng() },
-            map: mapRef.current,
-            title: mapSearch,
-          });
-  
-          toast.success("検索完了");
-        } else {
-          toast.error("位置情報が見つかりませんでした");
-        }
+      const results = await new Promise((resolve, reject) => {
+        geocoder.geocode({ address: mapSearch }, (results, status) => {
+          if (status === "OK") {
+            resolve(results);
+          } else {
+            reject(new Error("Geocoding failed"));
+          }
+        });
       });
+
+      const firstResult = results[0];
+      const { lat, lng } = firstResult.geometry.location;
+      
+      console.log(`lat: ${lat()}, lng: ${lng()}`);
+      mapRef.current?.panTo({ lat: lat(), lng: lng() });
+      
+      new window.google.maps.Marker({
+        position: { lat: lat(), lng: lng() },
+        map: mapRef.current,
+        title: mapSearch,
+      });
+
+      const searchResponse = await searchSitesByAddressGAS(mapSearch);
+      setSites(searchResponse.sites);
+      
+      toast.success("検索完了");
     } catch (error) {
-      console.log(`Error: ${error.message}`);
-      toast.error(`検索中にエラーが発生しました`);
+      console.error("Search error:", error);
+      toast.error("検索中にエラーが発生しました");
     }
   };
 
@@ -166,7 +116,6 @@ const handleMapSearch = async () => {
         />
       </div>
 
-      {/* Modals */}
       <SiteRegistrationModal 
         open={showSiteModal} 
         onOpenChange={setShowSiteModal}
