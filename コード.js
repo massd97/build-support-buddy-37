@@ -8,7 +8,7 @@ function doGet() {
 function registerSite(site) {
   const sheet = SpreadsheetApp.openById(PropertiesService.getScriptProperties().getProperty('SHEET_ID')).getSheetByName('Sites');
   const newRow = [
-    Utilities.getUuid(),
+    Utilities.getUuid(), // Generate a unique ID
     site.siteName,
     site.siteType,
     site.address,
@@ -52,12 +52,13 @@ function fetchSites() {
     const sites = rows.map(row => {
       const site = {};
       headers.forEach((header, index) => {
-        if (header === 'latitude' || header === 'longitude') {
+        if (header === 'id') {
+          site['id'] = row[index] || Utilities.getUuid(); // Ensure ID exists
+        } else if (header === 'latitude' || header === 'longitude') {
           site[header] = Number(row[index]) || 0;
         } else {
           site[header] = row[index] || '';
         }
-        console.log(`${header}: ${site[header]}`);
       });
       return site;
     });
@@ -70,7 +71,6 @@ function fetchSites() {
   }
 }
 
-//現場検索
 function searchSitesByAddress(addressQuery) {
   const sites = fetchSites();
   if (!sites.success) return sites;
@@ -100,6 +100,24 @@ function filterSites(criteria) {
 function test() {
   const result = fetchSites();
   console.log(JSON.stringify(result, null, 2));
+}
+
+function registerTransaction(transaction) {
+  const sheet = SpreadsheetApp.openById(PropertiesService.getScriptProperties().getProperty('SHEET_ID')).getSheetByName('Transactions');
+  const newRow = [
+    Utilities.getUuid(), // Generate a unique ID for the transaction
+    transaction.type,
+    transaction.siteName,
+    transaction.address,
+    transaction.preferredDate,
+    transaction.requesterName,
+    transaction.soilVolume,
+    transaction.email,
+    transaction.contactPerson,
+    new Date(), // Timestamp
+  ];
+  sheet.appendRow(newRow);
+  return { success: true, message: '取引登録完了' };
 }
 
 function fetchMatchingSites() {
