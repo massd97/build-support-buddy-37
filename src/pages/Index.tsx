@@ -90,7 +90,7 @@ const Index = () => {
       </h1>
 
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-start gap-4 mb-6">
+        {/* <div className="flex items-start gap-4 mb-6">
           <div className="flex-1">
             <MapSearch
               mapSearch={mapSearch}
@@ -98,7 +98,7 @@ const Index = () => {
               handleMapSearch={handleMapSearch}
             />
           </div>
-        </div>
+        </div> */}
 
         <MapContainer 
           sites={sites}

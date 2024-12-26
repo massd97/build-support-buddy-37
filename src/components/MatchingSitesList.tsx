@@ -81,7 +81,7 @@ const MatchingSitesList = ({ open, onOpenChange }: MatchingSitesListProps) => {
           </DialogHeader>
           <div className="py-4">
             {loading ? (
-              <div>Loading...</div>
+              <div>取得中...</div>
             ) : error ? (
               <div>{error}</div>
             ) : (

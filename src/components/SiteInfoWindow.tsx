@@ -10,7 +10,7 @@ interface SiteInfoWindowProps {
 
 const SiteInfoWindow = ({ site }: SiteInfoWindowProps) => {
   const [showTransactionModal, setShowTransactionModal] = useState(false);
-
+  console.log(`SiteInfoWindow: ${site.siteName}`);
   return (
     <>
       <div className="p-2 min-w-[200px]">
