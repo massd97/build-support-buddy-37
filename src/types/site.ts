@@ -13,4 +13,6 @@ export interface Site {
   contactPerson: string;
   email: string;
   company: CompanyType;
+  latitude?: number;
+  longitude?: number;
 }
