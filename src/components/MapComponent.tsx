@@ -54,6 +54,7 @@ const MapComponent = ({ sites }: MapComponentProps) => {
         mapContainerStyle={mapContainerStyle}
         center={center}
         zoom={11}
+        onLoad={handleMapLoad}
         options={{
           zoomControl: true,
           streetViewControl: false,
