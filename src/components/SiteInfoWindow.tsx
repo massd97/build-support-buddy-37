@@ -43,7 +43,7 @@ const SiteInfoWindow = ({ site }: SiteInfoWindowProps) => {
           siteName: site.siteName,
           address: site.address,
           contactPerson: site.contactPerson,
-          soilVolume: site.soilAmount,
+          soilVolume: Number(site.soilAmount), // Convert string to number
           email: site.email,
         }}
       />
