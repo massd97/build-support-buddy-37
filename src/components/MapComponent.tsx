@@ -43,23 +43,28 @@ const MapComponent = ({ sites }: MapComponentProps) => {
 
   const handleMarkerClick = (site: Site) => {
     console.log('Marker clicked:', site);
+    
     // Convert latitude and longitude to numbers
     const position = {
       lat: typeof site.lat === 'string' ? parseFloat(site.lat) : site.lat,
       lng: typeof site.lng === 'string' ? parseFloat(site.lng) : site.lng
     };
 
+    console.log('Setting selected site with position:', position);
     setSelectedSite({
       ...site,
       lat: position.lat,
       lng: position.lng
     });
+    
+    console.log('Setting selected marker ID:', site.id);
     setSelectedMarkerId(site.id);
+    
     toast.info(`${site.siteName} - ${site.siteType}`);
   };
 
-  console.log('Selected site:', selectedSite);
-  console.log('Selected marker ID:', selectedMarkerId);
+  console.log('Current selected site:', selectedSite);
+  console.log('Current selected marker ID:', selectedMarkerId);
 
   return (
     <LoadScript 
@@ -100,6 +105,7 @@ const MapComponent = ({ sites }: MapComponentProps) => {
               lng: typeof selectedSite.lng === 'string' ? parseFloat(selectedSite.lng) : selectedSite.lng
             }}
             onCloseClick={() => {
+              console.log('InfoWindow closing');
               setSelectedMarkerId(null);
               setSelectedSite(null);
             }}
