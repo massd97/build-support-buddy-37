@@ -29,7 +29,6 @@ const MapComponent = ({ sites }: MapComponentProps) => {
     mapRef.current = map;
     setMapLoaded(true);
     
-    // Set different zoom levels for mobile and desktop
     if (isMobile) {
       map.setZoom(13);
     } else {
@@ -53,7 +52,6 @@ const MapComponent = ({ sites }: MapComponentProps) => {
   const handleMarkerClick = (site: Site) => {
     console.log('Marker clicked:', site);
     
-    // Convert latitude and longitude to numbers
     const position = {
       lat: typeof site.lat === 'string' ? parseFloat(site.lat) : site.lat,
       lng: typeof site.lng === 'string' ? parseFloat(site.lng) : site.lng
@@ -69,7 +67,6 @@ const MapComponent = ({ sites }: MapComponentProps) => {
     console.log('Setting selected marker ID:', site.id);
     setSelectedMarkerId(site.id);
 
-    // Adjust map center and zoom for mobile
     if (isMobile && mapRef.current) {
       mapRef.current.setCenter(position);
       mapRef.current.setZoom(15);
@@ -99,7 +96,7 @@ const MapComponent = ({ sites }: MapComponentProps) => {
           streetViewControl: false,
           mapTypeControl: false,
           fullscreenControl: true,
-          gestureHandling: 'greedy', // Makes it easier to navigate on mobile
+          gestureHandling: 'cooperative', // Changed from 'greedy' to 'cooperative'
         }}
       >
         {mapLoaded && sites.map((site) => (
