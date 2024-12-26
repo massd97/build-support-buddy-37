@@ -40,7 +40,17 @@ const MapComponent = ({ sites }: MapComponentProps) => {
   });
 
   const handleMarkerClick = (site: Site) => {
-    setSelectedSite(site);
+    // Convert latitude and longitude to numbers
+    const position = {
+      lat: typeof site.latitude === 'string' ? parseFloat(site.latitude) : site.latitude,
+      lng: typeof site.longitude === 'string' ? parseFloat(site.longitude) : site.longitude
+    };
+
+    setSelectedSite({
+      ...site,
+      latitude: position.lat,
+      longitude: position.lng
+    });
     setSelectedMarkerId(site.id);
     toast.info(`${site.siteName} - ${site.siteType}`);
   };
@@ -65,7 +75,10 @@ const MapComponent = ({ sites }: MapComponentProps) => {
         {mapLoaded && sites.map((site) => (
           <Marker
             key={site.id}
-            position={{ lat: site.lat, lng: site.lng }}
+            position={{ 
+              lat: typeof site.latitude === 'string' ? parseFloat(site.latitude) : site.latitude,
+              lng: typeof site.longitude === 'string' ? parseFloat(site.longitude) : site.longitude
+            }}
             onClick={() => handleMarkerClick(site)}
             icon={getMarkerIcon(site)}
           />
@@ -73,7 +86,10 @@ const MapComponent = ({ sites }: MapComponentProps) => {
 
         {selectedMarkerId && selectedSite && (
           <InfoWindow
-            position={{ lat: selectedSite.lat, lng: selectedSite.lng }}
+            position={{ 
+              lat: typeof selectedSite.latitude === 'string' ? parseFloat(selectedSite.latitude) : selectedSite.latitude,
+              lng: typeof selectedSite.longitude === 'string' ? parseFloat(selectedSite.longitude) : selectedSite.longitude
+            }}
             onCloseClick={() => {
               setSelectedMarkerId(null);
               setSelectedSite(null);
