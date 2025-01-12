@@ -1,15 +1,11 @@
-import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useState, useEffect } from "react";
 import TransactionRegistrationModal from "./TransactionRegistrationModal";
 import SitesTable from "./SitesTable";
 import SiteDetailsDialog from "./SiteDetailsDialog";
+import EditSiteModal from "./EditSiteModal";
+import SiteSearch from "./sites/SiteSearch";
+import SiteDataLoader from "./sites/SiteDataLoader";
 
 declare const google: {
   script: {
@@ -17,19 +13,17 @@ declare const google: {
       withSuccessHandler: <T>(callback: (response: T) => void) => {
         withFailureHandler: (callback: (error: any) => void) => {
           fetchSites: () => void;
-          updateSite: (updatedSite: any) => void; // Add this line
+          updateSite: (updatedSite: any) => void;
         };
       };
     };
   };
 };
 
-import EditSiteModal from "./EditSiteModal";
-
 interface FetchSitesResponse {
   success: boolean;
   message?: string;
-  sites: any[]; // Update the type of `sites` based on your data structure if needed
+  sites: any[];
 }
 
 interface AvailableSitesListProps {
@@ -39,52 +33,47 @@ interface AvailableSitesListProps {
 
 const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => {
   const [search, setSearch] = useState("");
-  const [sites, setSites] = useState<any[]>([]); // State for sites fetched from GAS
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState<string | null>(null); // Error state
+  const [sites, setSites] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedSite, setSelectedSite] = useState<typeof sites[0] | null>(null);
   const [showDetails, setShowDetails] = useState(false);
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  
-  const handleEditClick = (site: any) => {
-    console.log("Edit clicked for site:", site);
-  };
 
   useEffect(() => {
     if (open) {
-      setLoading(true);
-      setError(null);
-      const decodeBase64 = (base64: string): string => {
-        const binaryString = atob(base64);
-        const binaryData = Uint8Array.from(binaryString, char => char.charCodeAt(0));
-        return new TextDecoder("utf-8").decode(binaryData);
-      };
-      // If the search input matches an ID format, fetch by ID
-      const isIdSearch = /^\w{8}(-\w{4}){3}-\w{12}$/.test(search); // UUID format
-      const ids = isIdSearch ? [search] : [];
-      
-      google.script.run
-        .withSuccessHandler((compressedResponse: string) => {
-          const decodeString = decodeBase64(compressedResponse);
-          const response = JSON.parse(decodeString) as FetchSitesResponse;
-          console.log("Received response from GAS:", response);
-          if (response.success) {
-            setSites(response.sites);
-          } else {
-            setError(response.message || "Failed to fetch sites.");
-          }
-          console.log("Sites fetched:", response.sites);
-          setLoading(false);
-        })
-        .withFailureHandler((err) => {
-          console.error("Error fetching sites:", err);
-          setError("An error occurred while fetching sites.");
-          setLoading(false);
-        })
-        .fetchSites(); // GAS function to fetch sites
+      fetchSites();
     }
   }, [open]);
+
+  const fetchSites = () => {
+    setLoading(true);
+    setError(null);
+    const decodeBase64 = (base64: string): string => {
+      const binaryString = atob(base64);
+      const binaryData = Uint8Array.from(binaryString, char => char.charCodeAt(0));
+      return new TextDecoder("utf-8").decode(binaryData);
+    };
+
+    google.script.run
+      .withSuccessHandler((compressedResponse: string) => {
+        const decodeString = decodeBase64(compressedResponse);
+        const response = JSON.parse(decodeString) as FetchSitesResponse;
+        if (response.success) {
+          setSites(response.sites);
+        } else {
+          setError(response.message || "Failed to fetch sites.");
+        }
+        setLoading(false);
+      })
+      .withFailureHandler((err) => {
+        console.error("Error fetching sites:", err);
+        setError("An error occurred while fetching sites.");
+        setLoading(false);
+      })
+      .fetchSites();
+  };
 
   const filteredSites = sites.filter(site => {
     if (/^\d+$/.test(search)) {
@@ -115,17 +104,9 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
 
   const handleSiteClick = (site: any) => {
     if (site.lat && site.lng) {
-      console.log(`Site clicked: ${site["siteName"]}, Lat: ${site.lat}, Lng: ${site.lng}`);
       setSelectedSite(site);
       setShowDetails(true);
-    } else {
-      console.warn("Selected site has no geolocation data.");
     }
-  };
-
-  const handleTransactionClick = (site: any) => {
-    setSelectedSite(site); // Ensure selectedSite contains the relevant site data
-    setShowTransactionModal(true);
   };
 
   return (
@@ -139,27 +120,21 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            { loading ? (
-              <div>データ取得中...</div>
-            ) : error ? (
-              <div>{error}</div>
-            ) : (
+            <SiteDataLoader loading={loading} error={error}>
               <>
-                <Input
-                  placeholder="検索 (住所、現場名、担当者名)"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="mb-4"
-                />
+                <SiteSearch value={search} onChange={setSearch} />
                 <div className="max-h-[500px] overflow-y-auto">
                   <SitesTable 
                     sites={filteredSites}
                     onSiteClick={handleSiteClick}
-                    onEditClick={handleEditClick}
-                    />
+                    onEditClick={(site) => {
+                      setSelectedSite(site);
+                      setShowEditModal(true);
+                    }}
+                  />
                 </div>
               </>
-            )}
+            </SiteDataLoader>
           </div>
         </DialogContent>
       </Dialog>
@@ -170,17 +145,17 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
           open={showDetails}
           onOpenChange={setShowDetails}
           onTransactionClick={(site) => {
-            setSelectedSite(site); // Pass the site to be used in the modal
-            setShowTransactionModal(true); // Open the transaction modal
+            setSelectedSite(site);
+            setShowTransactionModal(true);
           }}
           onEditClick={(site) => {
-            setSelectedSite(site); // Set the site to be edited
-            setShowEditModal(true); // Open edit modal
+            setSelectedSite(site);
+            setShowEditModal(true);
           }} 
         />
       )}
 
-      {showTransactionModal && (
+      {showTransactionModal && selectedSite && (
         <TransactionRegistrationModal 
           open={showTransactionModal}
           onOpenChange={(open) => {
@@ -208,7 +183,6 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
           onOpenChange={setShowEditModal}
           site={selectedSite}
           onSave={(updatedSite) => {
-            console.log("Updated site data being sent to GAS:", updatedSite);
             google.script.run
               .withSuccessHandler(() => {
                 alert("現場が更新されました！");
@@ -216,7 +190,7 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
                   prevSites.map((site) =>
                     site.ID === updatedSite.ID ? updatedSite : site
                   )
-                ); // Update the frontend state
+                );
               })
               .withFailureHandler((error) => {
                 console.error("Error updating site:", error);
