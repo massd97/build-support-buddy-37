@@ -1,20 +1,20 @@
-# Welcome to your Lovable project
+# SoilSync プロジェクトへようこそ
 
-## Project info
+## プロジェクト情報
 
 **URL**: https://lovable.dev/projects/3ddb1bfb-c53e-4ba8-b7bb-c1d7d7e28e9e
 
-## Backend Setup Instructions
+## バックエンド設定手順
 
-This project uses Supabase as the backend. To set up the backend:
+このプロジェクトはSupabaseをバックエンドとして使用しています。バックエンドの設定手順は以下の通りです：
 
-1. Connect to Supabase:
-   - Click on the Supabase menu in the top right of the Lovable interface
-   - Follow the connection process
+1. Supabaseへの接続:
+   - Lovableインターフェースの右上にあるSupabaseメニューをクリック
+   - 接続プロセスに従って設定を完了
 
-2. Required Database Tables:
+2. 必要なデータベーステーブル:
    ```sql
-   -- Sites table
+   -- サイトテーブル
    create table sites (
      id uuid default gen_random_uuid() primary key,
      name text not null,
@@ -30,7 +30,7 @@ This project uses Supabase as the backend. To set up the backend:
      created_at timestamp with time zone default timezone('utc'::text, now()) not null
    );
 
-   -- Transactions table
+   -- 取引テーブル
    create table transactions (
      id uuid default gen_random_uuid() primary key,
      site_id uuid references sites(id) not null,
@@ -39,22 +39,40 @@ This project uses Supabase as the backend. To set up the backend:
    );
    ```
 
-3. Required Environment Variables:
-   - VITE_SUPABASE_URL: Your Supabase project URL
-   - VITE_SUPABASE_ANON_KEY: Your Supabase anonymous key
-   - VITE_GOOGLE_MAPS_API_KEY: Your Google Maps API key
+3. 必要な環境変数:
+   - VITE_SUPABASE_URL: SupabaseプロジェクトのURL
+   - VITE_SUPABASE_ANON_KEY: Supabaseの匿名キー
+   - VITE_GOOGLE_MAPS_API_KEY: Google Maps APIキー
 
-4. API Endpoints to Implement:
-   - GET /api/sites - List all sites with filtering
-   - POST /api/sites - Create new site
-   - GET /api/sites/:id - Get site details
-   - POST /api/transactions - Create new transaction
-   - GET /api/transactions - List transactions
+4. 実装が必要なAPIエンドポイント:
+   - GET /api/sites - サイト一覧の取得（フィルタリング機能付き）
+   - POST /api/sites - 新規サイトの作成
+   - GET /api/sites/:id - サイト詳細の取得
+   - POST /api/transactions - 新規取引の作成
+   - GET /api/transactions - 取引一覧の取得
 
-## How can I deploy this project?
+## プロジェクトのデプロイ方法
 
-Simply open [Lovable](https://lovable.dev/projects/3ddb1bfb-c53e-4ba8-b7bb-c1d7d7e28e9e) and click on Share -> Publish.
+[Lovable](https://lovable.dev/projects/3ddb1bfb-c53e-4ba8-b7bb-c1d7d7e28e9e)を開き、共有 -> 公開をクリックするだけです。
 
-## I want to use a custom domain - is that possible?
+## カスタムドメインの使用について
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+現時点ではカスタムドメインをサポートしていません。独自のドメインでプロジェクトをデプロイしたい場合は、Netlifyの使用をお勧めします。詳細については、ドキュメントをご覧ください：[カスタムドメイン](https://docs.lovable.dev/tips-tricks/custom-domain/)
+
+## 主な機能
+
+- 🗺️ Google Mapsを使用した現場の視覚化
+- 🔍 現場の検索・フィルタリング機能
+- 📝 新規現場の登録
+- 💼 取引管理システム
+- 📊 マッチング機能
+- 📱 レスポンシブデザイン
+
+## 技術スタック
+
+- React + TypeScript
+- Tailwind CSS
+- shadcn/ui コンポーネントライブラリ
+- Supabase (バックエンド)
+- Google Maps API
+- Tanstack Query (データ取得)
