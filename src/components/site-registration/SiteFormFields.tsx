@@ -9,14 +9,17 @@ interface FormFieldProps {
     type: string;
     required?: boolean;
     options?: string[];
+    accept?: string;
   };
   formData: any;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleDropdownChange?: (id: string, value: string) => void;
   setSoilType?: (value: string) => void;
+  setImage?: (file: File | null) => void;
 }
 
-export const FormField = ({ field, formData, handleInputChange, handleDropdownChange, setSoilType }: FormFieldProps) => {
+export const FormField = ({ field, formData, handleInputChange, handleDropdownChange, setSoilType, setImage}: FormFieldProps) => {
+  
   if (field.type === "dropdown") {
     return (
       <div className="grid gap-2">
@@ -38,6 +41,31 @@ export const FormField = ({ field, formData, handleInputChange, handleDropdownCh
             ))}
           </SelectContent>
         </Select>
+      </div>
+    );
+  }
+
+  if (field.type === "file") {
+    console.log("Rendering file input field");
+    return (
+      <div className="grid gap-2">
+        <Label htmlFor={field.id}>{field.label}</Label>
+        <Input
+          id={field.id}
+          type="file"
+          accept={field.accept}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            const file = e.target.files?.[0];
+            if (file && setImage) {
+              console.log("Selected file:", file); // Log the selected file for debugging
+              setImage(file); // Pass the file to parent state
+            } else {
+              console.log("No file selected");
+              if (setImage) setImage(null); // Clear image if no file selected
+            }
+          }}
+          required={field.required}
+        />
       </div>
     );
   }

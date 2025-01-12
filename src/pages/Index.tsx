@@ -31,10 +31,10 @@ const Index = () => {
   const mapRef = useRef(null);
 
   useEffect(() => {
-    const loadSites = async () => {
+    const loadSites = async (ids: string[] = []) => {
       try {
         setLoading(true);
-        const response = await fetchSitesFromGAS();
+        const response = await fetchSitesFromGAS(ids);
         setSites(response.sites);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
