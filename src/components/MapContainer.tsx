@@ -38,7 +38,7 @@ const MapContainer = ({
   const filteredSites = sites.filter(site => {
     if (company !== "all" && site.company !== company) return false;
     if (siteType !== "all" && site.siteType !== siteType) return false;
-    if (minSoilAmount && parseInt(site.soilAmount) < parseInt(minSoilAmount)) return false;
+    if (minSoilAmount && parseInt(site.soilVolume) < parseInt(minSoilAmount)) return false;
     if (soilType !== "all" && site.soilType !== soilType) return false;
     return true;
   });
