@@ -17,7 +17,7 @@ import { ScrollArea } from "./ui/scroll-area";
 declare const google: {
   script: {
     run: {
-      withSuccessHandler: <T>(callback: (response: T) => void) => {
+      withSuccessHandler: (callback: () => void) => {
         withFailureHandler: (callback: (error: any) => void) => {
           registerSite: (payload: any) => void;
         };
@@ -47,7 +47,6 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
     dumpSize: "",
     smallTransport: "無",
     soilVolume: "",
-    soilType: "",
     previousUse: "",
     requiredSoilVolume: "",
   });
@@ -71,24 +70,13 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
         company,
       };
 
-      console.log('image:', image);
-
-      console.log("Base64 Image:", image ? await readFileAsBase64(image) : "No image");
-  
       console.log("Submitting site data:", payload);
-  
+
       google.script.run
-        .withSuccessHandler((response: { success: boolean; id: string; message: string }) => {
-          if (response.success) {
-            console.log("Site registered successfully with ID:", response.id);
-            alert("登録成功！ID: " + response.id);
-            onOpenChange(false);
-            setTimeout(() => {
-              
-            }, 500);
-          } else {
-            alert("登録失敗！");
-          }
+        .withSuccessHandler(() => {
+          alert("登録成功！");
+          onOpenChange(false);
+          window.location.href = window.location.href;
         })
         .withFailureHandler((error) => {
           console.error("Registration failed:", error);
@@ -99,16 +87,13 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
       console.error("Error during registration:", error);
     }
   };
-  
 
   const readFileAsBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
-      console.log("Reading file as base64:", file);
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result as string);
       reader.onerror = (err) => reject(err);
       reader.readAsDataURL(file);
-      console.log("File read as base64:", reader.result);
     });
   };
 
@@ -132,28 +117,12 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
             type: "dropdown",
             options: ["黒土", "赤土", "砂質", "粘土質", "その他"],
           },
-          {
-            id: "image",
-            label: "残土の状態を示す画像",
-            type: "file",
-            accept: "image/*",
-            onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                console.log("Selected file:", file);
-                setImage(file);
-              }else{
-                console.log("No file selected");
-              }
-            },
-          },
-          { id: "smallTransport", label: "小型トラックの入場可否", type: "dropdown", options: ["有", "無"] },
           { id: "previousUse", label: "従前の用途", type: "text" },
         ]
       : [{ id: "requiredSoilVolume", label: "必要土量", type: "number" },
         {
           id: "soilType",
-          label: "必要となる残土の土質",
+          label: "必要となる土の土質",
           type: "dropdown",
           options: ["黒土", "赤土", "砂質", "粘土質", "その他"],
         },
@@ -190,7 +159,6 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
                 handleInputChange={handleInputChange}
                 handleDropdownChange={handleDropdownChange}
                 setSoilType={setSoilType}
-                setImage={setImage}
               />
             ))}
 

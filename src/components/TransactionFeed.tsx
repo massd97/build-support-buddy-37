@@ -28,14 +28,13 @@ declare const google: {
     run: {
       withSuccessHandler: <T>(callback: (response: T) => void) => {
         withFailureHandler: (callback: (error: any) => void) => {
-          fetchTransactions: (ids?: string[]) => void; // Accept an optional array of IDs
-          updateTransactionStatus: (payload: { id: string; zandoSiteID: string; status: "受諾" | "拒否" }) => void;
+          fetchTransactions: () => void;
+          updateTransactionStatus: (payload: { id: string; status: "受諾" | "拒否" }) => void;
         };
       };
     };
   };
 };
-
 
 const TransactionFeed = ({ open, onOpenChange }: TransactionFeedProps) => {
 
@@ -45,7 +44,7 @@ const TransactionFeed = ({ open, onOpenChange }: TransactionFeedProps) => {
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
 
-  const fetchTransactions = (ids: string[] = []) => {
+  const fetchTransactions = () => {
     setLoading(true);
     setError(null);
     const decodeBase64 = (base64: string): string => {
@@ -57,6 +56,7 @@ const TransactionFeed = ({ open, onOpenChange }: TransactionFeedProps) => {
     google.script.run
       .withSuccessHandler((compressedResponse: string) => {
         try {
+          console.log("Received compressed response from GAS:", compressedResponse);
           // Decode the base64 response
           const decodedString = decodeBase64(compressedResponse);
           const response = JSON.parse(decodedString);
@@ -79,19 +79,12 @@ const TransactionFeed = ({ open, onOpenChange }: TransactionFeedProps) => {
         setError("An error occurred while fetching transactions.");
         setLoading(false);
       })
-      .fetchTransactions(ids);
+      .fetchTransactions(); // Call the compressed GAS function
   };
   
 
   // Handle transaction status update (受諾 or 拒否)
-  const updateStatus = (transaction: any, status: "受諾" | "拒否") => {
-    console.log(`Updating transaction status for transaction:`, transaction);
-  
-    const payload = {
-      ...transaction, // Include all transaction details
-      status,         // Add the updated status
-    };
-  
+  const updateStatus = (id: string, status: "受諾" | "拒否") => {
     google.script.run
       .withSuccessHandler((response: { success: boolean; message: string }) => {
         console.log("Transaction status update response:", response);
@@ -106,8 +99,8 @@ const TransactionFeed = ({ open, onOpenChange }: TransactionFeedProps) => {
         console.error("Error updating transaction status:", error);
         alert("An error occurred while updating transaction status.");
       })
-      .updateTransactionStatus(payload);
-  };  
+      .updateTransactionStatus({ id, status });
+  };
 
   useEffect(() => {
     if (open) fetchTransactions();
@@ -131,55 +124,41 @@ const TransactionFeed = ({ open, onOpenChange }: TransactionFeedProps) => {
           ) : error ? (
             <p className="text-red-500">{error}</p>
           ) : (
-            <div
-              className="max-h-64 overflow-y-auto border border-gray-300 rounded"
-            >
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>受け取り希望日</TableHead>
-                  <TableHead>必要土量(㎡)</TableHead>
-                  {/* <TableHead>取引の種類</TableHead> */}
-                  <TableHead>残土現場名</TableHead>
-                  <TableHead>客土現場名</TableHead>
-                  <TableHead>住所</TableHead>
-                  <TableHead>取引ステータス</TableHead>
-                  <TableHead>取引内容</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredTransactions.map((transaction) => (
-                  <TableRow key={transaction.ID}>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>受け取り希望日</TableHead>
+                <TableHead>種類</TableHead>
+                <TableHead>現場名</TableHead>
+                <TableHead>住所</TableHead>
+                <TableHead>取引内容</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+            {filteredTransactions.map((transaction) => (
+                  <TableRow key={transaction.id}>
                     <TableCell>{transaction.date}</TableCell>
-                    <TableCell>{transaction.soilVolume}</TableCell>
-                    {/* <TableCell>{transaction.type}</TableCell> */}
-                    <TableCell>{transaction.zandoSiteName}</TableCell>
+                    <TableCell>{transaction.type}</TableCell>
                     <TableCell>{transaction.siteName}</TableCell>
                     <TableCell>{transaction.address}</TableCell>
-                    <TableCell>{transaction.Status}</TableCell>
                     <TableCell>
-                    {transaction.Status === "ペンディング中" ? (
-                        transaction.type === "要求" ? (
-                          <div className="flex space-x-2">
-                            <Button onClick={() => updateStatus(transaction, "受諾")}>
-                              受諾
-                            </Button>
-                            <Button onClick={() => updateStatus(transaction, "拒否")}>
-                              拒否
-                            </Button>
-                          </div>
-                        ) : (
-                          <span>{transaction.type}</span> // No action for other types
-                        )
-                    ) : (
-                        transaction.Status
-                    )}
+                      {transaction.type === "要求" ? (
+                        <div className="flex space-x-2">
+                          <Button onClick={() => updateStatus(transaction.id, "受諾")}>
+                            受諾
+                          </Button>
+                          <Button onClick={() => updateStatus(transaction.id, "拒否")}>
+                            拒否
+                          </Button>
+                        </div>
+                      ) : (
+                        <span>---</span> // No action for other types
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
-            </div>
           )}
         </div>
       </DialogContent>
