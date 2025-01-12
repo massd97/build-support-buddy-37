@@ -2,17 +2,24 @@ export type CompanyType = "OHD" | "Meldia" | "HawkOne";
 export type SiteType = "残土" | "客土";
 
 export interface Site {
-  id: string;
+  ID: string;
   siteName: string;
   address: string;
   lat: number;
   lng: number;
-  soilAmount: string;
+  soilVolume: string;
+  requiredSoilVolume: string;
   soilType: string;
   siteType: SiteType;
+  startDate: string;
+  endDate: string;
   contactPerson: string;
   email: string;
   company: CompanyType;
   latitude?: number;
   longitude?: number;
+  Image?: string;
+  previousUse: string;
+  dumpSize: string;
+  smallTransport: "無" | "有";
 }

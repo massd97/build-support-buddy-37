@@ -46,11 +46,9 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
   const [showDetails, setShowDetails] = useState(false);
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [siteToEdit, setSiteToEdit] = useState<any>(null);
   
   const handleEditClick = (site: any) => {
-    setSiteToEdit(site); // Set the site to be edited
-    setShowEditModal(true); // Open the edit modal
+    console.log("Edit clicked for site:", site);
   };
 
   useEffect(() => {
@@ -62,11 +60,13 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
         const binaryData = Uint8Array.from(binaryString, char => char.charCodeAt(0));
         return new TextDecoder("utf-8").decode(binaryData);
       };
+      // If the search input matches an ID format, fetch by ID
+      const isIdSearch = /^\w{8}(-\w{4}){3}-\w{12}$/.test(search); // UUID format
+      const ids = isIdSearch ? [search] : [];
+      
       google.script.run
         .withSuccessHandler((compressedResponse: string) => {
-          console.log("Received compressed response from GAS:", compressedResponse);
           const decodeString = decodeBase64(compressedResponse);
-          console.log("Decoded response from GAS:", decodeString);
           const response = JSON.parse(decodeString) as FetchSitesResponse;
           console.log("Received response from GAS:", response);
           if (response.success) {
@@ -131,16 +131,16 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
   return (
     <>
       <Dialog open={open} onOpenChange={handleMainDialogClose}>
-        <DialogContent className="sm:max-w-[900px] z-50">
+        <DialogContent className="w-full max-w-[900px] z-50">
           <DialogHeader>
             <DialogTitle>使用可能現場一覧</DialogTitle>
             <DialogDescription>
-              現場を選択し、取引申請及び詳細を確認できます
+              現場を選択し、取引申請、現場情報編集又は詳細の確認を行ってください。
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             { loading ? (
-              <div>Loading...</div>
+              <div>データ取得中...</div>
             ) : error ? (
               <div>{error}</div>
             ) : (
@@ -151,11 +151,13 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
                   onChange={(e) => setSearch(e.target.value)}
                   className="mb-4"
                 />
-                <SitesTable 
-                  sites={filteredSites}
-                  onSiteClick={handleSiteClick}
-                  onEditClick={handleEditClick}
-                />
+                <div className="max-h-[500px] overflow-y-auto">
+                  <SitesTable 
+                    sites={filteredSites}
+                    onSiteClick={handleSiteClick}
+                    onEditClick={handleEditClick}
+                    />
+                </div>
               </>
             )}
           </div>
@@ -188,6 +190,9 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
             }
           }}
           siteData={{
+            ID: selectedSite.ID,
+            soilType: selectedSite.siteType,
+            requiredSoilVolume: selectedSite.requiredSoilVolume,
             siteName: selectedSite.siteName,
             address: selectedSite.address,
             email: selectedSite.email,
@@ -203,12 +208,13 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
           onOpenChange={setShowEditModal}
           site={selectedSite}
           onSave={(updatedSite) => {
+            console.log("Updated site data being sent to GAS:", updatedSite);
             google.script.run
               .withSuccessHandler(() => {
                 alert("現場が更新されました！");
                 setSites((prevSites) =>
                   prevSites.map((site) =>
-                    site.id === updatedSite.id ? updatedSite : site
+                    site.ID === updatedSite.ID ? updatedSite : site
                   )
                 ); // Update the frontend state
               })
@@ -216,7 +222,7 @@ const AvailableSitesList = ({ open, onOpenChange }: AvailableSitesListProps) => 
                 console.error("Error updating site:", error);
                 alert("現場の更新中にエラーが発生しました。");
               })
-              .updateSite(updatedSite); // Call the GAS function to update the site
+              .updateSite(updatedSite); 
           }}
         />
       )}

@@ -11,7 +11,6 @@ interface MapComponentProps {
 }
 
 const MapComponent = ({ sites }: MapComponentProps) => {
-  const apiKey = useContext(ApiKeyContext);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [selectedSite, setSelectedSite] = useState<Site | null>(null);
   const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(null);
@@ -64,12 +63,16 @@ const MapComponent = ({ sites }: MapComponentProps) => {
       lng: position.lng
     });
     
-    console.log('Setting selected marker ID:', site.id);
-    setSelectedMarkerId(site.id);
+    console.log('Setting selected marker ID:', site.ID);
+    setSelectedMarkerId(site.ID);
 
     if (isMobile && mapRef.current) {
+      console.log('Panning to position:', position);
       mapRef.current.setCenter(position);
       mapRef.current.setZoom(15);
+    }else{
+      console.log('Panning to position:', position);
+      mapRef.current?.panTo(position);
     }
     
     toast.info(`${site.siteName} - ${site.siteType}`);
@@ -101,7 +104,7 @@ const MapComponent = ({ sites }: MapComponentProps) => {
       >
         {mapLoaded && sites.map((site) => (
           <Marker
-            key={site.id}
+            key={site.ID}
             position={{ 
               lat: typeof site.lat === 'string' ? parseFloat(site.lat) : site.lat,
               lng: typeof site.lng === 'string' ? parseFloat(site.lng) : site.lng

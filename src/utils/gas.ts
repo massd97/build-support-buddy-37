@@ -6,7 +6,7 @@ export interface FetchSitesResponse {
   sites: any[];
 }
 
-export const fetchSitesFromGAS = () => {
+export const fetchSitesFromGAS =  async (ids: string[] = []) => {
   return new Promise<FetchSitesResponse>((resolve, reject) => {
     const decodeBase64 = (base64: string): string => {
       const binaryString = atob(base64);
@@ -16,9 +16,7 @@ export const fetchSitesFromGAS = () => {
 
     google.script.run
       .withSuccessHandler((compressedResponse: string) => {
-        console.log("Received compressed response from GAS:", compressedResponse);
         const decodeString = decodeBase64(compressedResponse);
-        console.log("Decoded response from GAS:", decodeString);
         const response = JSON.parse(decodeString) as FetchSitesResponse;
         console.log("Parsed response from GAS:", response);
         
