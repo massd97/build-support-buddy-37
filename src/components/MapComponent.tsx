@@ -1,9 +1,8 @@
-import React,  { useState, useRef, useContext } from 'react';
+import  { useState, useRef } from 'react';
 import { GoogleMap, LoadScript, Marker, InfoWindow } from '@react-google-maps/api';
 import { toast } from "sonner";
 import { Site } from '@/types/site';
 import SiteInfoWindow from './SiteInfoWindow';
-import { ApiKeyContext } from '../contexts/ApiKeyContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface MapComponentProps {

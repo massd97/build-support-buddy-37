@@ -67,7 +67,7 @@ const Index = () => {
       console.log(`lat: ${lat()}, lng: ${lng()}`);
       mapRef.current?.panTo({ lat: lat(), lng: lng() });
       
-      new window.google.maps.Marker({
+      new window.google.maps.marker.AdvancedMarkerElement({
         position: { lat: lat(), lng: lng() },
         map: mapRef.current,
         title: mapSearch,
