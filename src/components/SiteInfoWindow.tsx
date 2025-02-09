@@ -23,13 +23,13 @@ const SiteInfoWindow = ({ site }: SiteInfoWindowProps) => {
       <div className="p-2 min-w-[200px]">
         <div className="flex items-center gap-2 mb-2">
           <h3 className="font-bold text-lg">{site.siteName}</h3>
-          <Badge variant={site.siteType === "残土" ? "destructive" : "default"}>
+          <Badge className={site.siteType === "残土" ? "bg-blue-500 text-white" : "bg-red-500 text-white"}
+          >
             {site.siteType}
           </Badge>
         </div>
         <p><span className="font-semibold">住所: </span> {site.address}</p>
-        <p><span className="font-semibold">現場担当者: </span> {site.contactPerson}</p>
-        <p><span className="font-semibold">連絡先: </span> {site.email}</p>
+        <p><span className="font-semibold">現場担当者の連絡先: </span> {site.email}</p>
         {site.siteType === "残土" ? (
           <>
             <p><span className="font-semibold">土量: </span> {site.soilVolume} m³</p>
@@ -59,19 +59,16 @@ const SiteInfoWindow = ({ site }: SiteInfoWindowProps) => {
         <p><span className="font-semibold">従前の用途: </span> {site.previousUse}</p>
         <p><span className="font-semibold">侵入可能最大ダンプサイズ（t）: </span> {site.dumpSize}</p>
         <p><span className="font-semibold">小型トラック: </span> {site.smallTransport}</p>
-
-        {site.siteType === "残土" && (
-          <Button
-            className="w-full mt-4"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setShowTransactionModal(true);
-            }}
-          >
-            取引を申請
-          </Button>
-        )}
+        <Button
+          className="w-full mt-4"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setShowTransactionModal(true);
+          }}
+        >
+          取引登録
+        </Button>
       </div>
 
       <TransactionRegistrationModal 

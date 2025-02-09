@@ -36,7 +36,7 @@ const SiteFilters = ({
             <SelectItem value="all">全て</SelectItem>
             <SelectItem value="OHD">OHD</SelectItem>
             <SelectItem value="Meldia">Meldia</SelectItem>
-            <SelectItem value="HawkOne">HawkOne</SelectItem>
+            <SelectItem value="HO">HO</SelectItem>
           </SelectContent>
         </Select>
       </div>

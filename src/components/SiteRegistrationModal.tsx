@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
@@ -20,6 +19,7 @@ declare const google: {
       withSuccessHandler: <T>(callback: (response: T) => void) => {
         withFailureHandler: (callback: (error: any) => void) => {
           registerSite: (payload: any) => void;
+          fetchSites: () => void;
         };
       };
     };
@@ -29,14 +29,16 @@ declare const google: {
 interface SiteRegistrationModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSiteRegistered: () => void;
 }
 
-const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProps) => {
+const SiteRegistrationModal = ({ open, onOpenChange, onSiteRegistered }: SiteRegistrationModalProps) => {
   const [siteType, setSiteType] = useState<"残土" | "客土">("残土");
   const [soilType, setSoilType] = useState("");
   const [otherSoilType, setOtherSoilType] = useState("");
   const [image, setImage] = useState<File | null>(null);
-  const [company, setCompany] = useState<"OHD" | "Meldia" | "HawkOne">("OHD");
+  const [company, setCompany] = useState<"OHD" | "Meldia" | "HO">("OHD");
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     siteName: "",
     address: "",
@@ -63,6 +65,15 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
 
   const handleSubmit = async () => {
     try {
+      setLoading(true);
+      const allFields = [...commonFields, ...siteTypeSpecificFields];
+      for (const field of allFields) {
+        if (field.required && !formData[field.id]) {
+          alert(`"${field.label}" を入力してください。`);
+          setLoading(false);
+          return;
+        }
+      }
       const payload = {
         ...formData,
         siteType,
@@ -79,15 +90,15 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
   
       google.script.run
         .withSuccessHandler((response: { success: boolean; id: string; message: string }) => {
+          setLoading(false);
           if (response.success) {
             console.log("Site registered successfully with ID:", response.id);
-            alert("登録成功！ID: " + response.id);
+            alert("登録成功！");
             onOpenChange(false);
-            setTimeout(() => {
-              
-            }, 500);
+            onSiteRegistered();
           } else {
             alert("登録失敗！");
+            setLoading(false);
           }
         })
         .withFailureHandler((error) => {
@@ -113,30 +124,32 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
   };
 
   const commonFields = [
-    { id: "siteName", label: "現場名", type: "text", required: true },
-    { id: "address", label: "住所", type: "text", required: true },
-    { id: "contactPerson", label: "担当者", type: "text", required: true },
-    { id: "email", label: "連絡先", type: "email", required: true },
-    { id: "startDate", label: "開始日", type: "date" },
-    { id: "endDate", label: "終了日", type: "date" },
+    { id: "siteName", label: "現場名※", type: "text", required: true },
+    { id: "address", label: "住所※", type: "text", required: true },
+    { id: "contactPerson", label: "担当者※", type: "text", required: true },
+    { id: "email", label: "メールアドレス※", type: "email", required: true },
+    { id: "startDate", label: "現場開始日※", type: "date", required: true },
+    { id: "endDate", label: "現場終了日※", type: "date", required: true },
   ];
 
   const siteTypeSpecificFields =
     siteType === "残土"
       ? [
-          { id: "dumpSize", label: "侵入可能最大ダンプサイズ（t）", type: "number" },
-          { id: "soilVolume", label: "土量(㎡)", type: "number" },
+          { id: "dumpSize", label: "侵入可能最大ダンプサイズ（t）", type: "number", required: false },
+          { id: "soilVolume", label: "土量(㎡)※", type: "number", required: true },
           {
             id: "soilType",
             label: "土質",
             type: "dropdown",
             options: ["黒土", "赤土", "砂質", "粘土質", "その他"],
+            required: false,
           },
           {
             id: "image",
             label: "残土の状態を示す画像",
             type: "file",
             accept: "image/*",
+            required: false,
             onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
               const file = e.target.files?.[0];
               if (file) {
@@ -147,15 +160,16 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
               }
             },
           },
-          { id: "smallTransport", label: "小型トラックの入場可否", type: "dropdown", options: ["有", "無"] },
-          { id: "previousUse", label: "従前の用途", type: "text" },
+          { id: "smallTransport", label: "小型トラックの入場可否", type: "dropdown", options: ["有", "無"], required: false },
+          { id: "previousUse", label: "従前の用途", type: "text", required: false },
         ]
-      : [{ id: "requiredSoilVolume", label: "必要土量", type: "number" },
+      : [{ id: "requiredSoilVolume", label: "必要土量", type: "number", required: false },
         {
           id: "soilType",
           label: "必要となる残土の土質",
           type: "dropdown",
           options: ["黒土", "赤土", "砂質", "粘土質", "その他"],
+          required: false,
         },
       ];
 
@@ -196,20 +210,22 @@ const SiteRegistrationModal = ({ open, onOpenChange }: SiteRegistrationModalProp
 
             <div className="grid gap-2">
               <Label htmlFor="company">施工会社</Label>
-              <Select onValueChange={(value) => setCompany(value as "OHD" | "Meldia" | "HawkOne")}>
+              <Select onValueChange={(value) => setCompany(value as "OHD" | "Meldia" | "HO")}>
                 <SelectTrigger>
                   <SelectValue placeholder="施工会社を選択してください" />
                 </SelectTrigger>
                 <SelectContent style={{ zIndex: 99999 }}>
                   <SelectItem value="OHD">OHD</SelectItem>
                   <SelectItem value="Meldia">Meldia</SelectItem>
-                  <SelectItem value="HawkOne">HawkOne</SelectItem>
+                  <SelectItem value="HO">HO</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <div className="sticky bottom-0 bg-background p-4 border-t">
-            <Button className="w-full" onClick={handleSubmit}>登録</Button>
+            <Button className="w-full" onClick={handleSubmit} disabled={loading}>
+              {loading ? "登録中..." : "登録"}
+            </Button>
           </div>
         </ScrollArea>
       </DialogContent>

@@ -23,7 +23,7 @@ const MatchingSitesTable = ({ matches, onMatchClick }: MatchingSitesTableProps) 
           <TableRow>
             <TableHead>客土現場名</TableHead>
             <TableHead>残土現場名</TableHead>
-            <TableHead>現場間の距離 (km)</TableHead>
+            <TableHead>現場間の車での移動距離 (km)</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

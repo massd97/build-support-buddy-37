@@ -41,11 +41,13 @@ const TransactionRegistrationModal = ({ open, onOpenChange, siteData }: Transact
   
   const [siteName, setSiteName] = useState<string>(siteData?.siteName || "");
   const [address, setAddress] = useState<string>(siteData?.address || "");
-  const [requiredSoilVolume, setRequiredSoilVolume] = useState<number>(siteData?.requiredSoilVolume || 0);
+  const [requiredSoilVolume, setRequiredSoilVolume] = useState<number>(siteData?.soilVolume || 0);
   const [contactPerson, setContactPerson] = useState<string>(siteData?.contactPerson || "Unknown");
   const [email, setEmail] = useState<string>(siteData?.email || "");
+  const [loading, setLoading] = useState(false);
   
   const handleSubmit = () => {
+    setLoading(true);
     const payload = {
       ID: siteData?.ID || "",
       emailRecipient: siteData?.email || "",
@@ -67,14 +69,15 @@ const TransactionRegistrationModal = ({ open, onOpenChange, siteData }: Transact
         if (response.success) {
           alert("取引が登録されました！");
           onOpenChange(false);
-          // window.location.href = window.location.href;
+          setLoading(false);
         } else {
           alert("取引登録中にエラーが発生しました: " + response.message);
         }
       })
       .withFailureHandler((error) => {
         console.error("Error registering transaction:", error);
-        alert("取引登録中にエラーが発生しました。");
+        alert("登録中にエラーが発生しました。");
+        setLoading(false);
       })
       .registerTransaction(payload);
   };
@@ -86,80 +89,73 @@ const TransactionRegistrationModal = ({ open, onOpenChange, siteData }: Transact
           <DialogTitle>入れ案件新規登録</DialogTitle>
         </DialogHeader>
         <DialogDescription>
-          取引申請する現場（客土）の情報を入力してください。
+          申請現場の情報を入力してください。
         </DialogDescription>
           <div className="w-full max-h-96 overflow-y-auto border border-gray-300 rounded-md">
             <Table>
-              <TableHeader>
+              <TableBody>
                 <TableRow>
-                  <TableHead>項目</TableHead>
-                  <TableHead>詳細</TableHead>
+                  <TableCell>現場名</TableCell>
+                  <TableCell>
+                    <Input
+                      value={siteName}
+                      onChange={(e) => setSiteName(e.target.value)}
+                      placeholder="現場名を入力してください"
+                    />
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell>現場名(客土)</TableCell>
-                    <TableCell>
-                      <Input
-                        value={siteName}
-                        onChange={(e) => setSiteName(e.target.value)}
-                        placeholder="客土現場名を入力してください"
+                <TableRow>
+                  <TableCell>住所</TableCell>
+                  <TableCell>
+                    <Input
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      placeholder="現場の住所を入力してください"
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>担当者</TableCell>
+                  <TableCell>
+                    <Input 
+                      value={contactPerson}
+                      onChange={(e) => setContactPerson(e.target.value)}
+                      placeholder="現場の担当者名を入力してください"
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>取引申請者のメールアドレス</TableCell>
+                  <TableCell>
+                    <Input 
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="取引申請者のメールアドレスを入力してください"
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>必要土量(㎥)</TableCell>
+                  <TableCell>
+                    <Input 
+                      type="number"
+                      value={requiredSoilVolume}
+                      onChange={(e) => setRequiredSoilVolume(Number(e.target.value))}
+                      placeholder="処分予定土量(残土)又は必要土量(客土)を入力してください"
                       />
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>住所</TableCell>
-                    <TableCell>
-                      <Input
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        placeholder="客土現場の住所を入力してください"
-                      />
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>担当者</TableCell>
-                    <TableCell>
-                      <Input 
-                        value={contactPerson}
-                        onChange={(e) => setContactPerson(e.target.value)}
-                        placeholder="客土現場の担当者名を入力してください"
-                      />
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>取引申請者のメールアドレス</TableCell>
-                    <TableCell>
-                      <Input 
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="取引申請者のメールアドレスを入力してください"
-                      />
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>必要土量(㎥)</TableCell>
-                    <TableCell>
-                      <Input 
-                        type="number"
-                        value={requiredSoilVolume}
-                        onChange={(e) => setRequiredSoilVolume(Number(e.target.value))}
-                        placeholder="必要な土の量を入力してください"
-                        />
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>受け取り希望日</TableCell>
-                    <TableCell>
-                      <Input id="preferredDate" type="date" 
-                        placeholder="残土の受け取り希望日を入力してください"
-                      />
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>受け取り希望日</TableCell>
+                  <TableCell>
+                    <Input id="preferredDate" type="date" 
+                      placeholder="取引希望日を入力してください"
+                    />
+                  </TableCell>
+                </TableRow>
+              </TableBody>
             </Table>
           </div>
-        <Button onClick={handleSubmit}>登録</Button>
+        <Button onClick={handleSubmit}disabled={loading}>{loading? "処理中...": "登録"}</Button>
       </DialogContent>
     </Dialog>
   );

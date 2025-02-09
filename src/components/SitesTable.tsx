@@ -66,8 +66,9 @@ const SitesTable = ({ sites, onSiteClick }: SitesTableProps) => {
                 onClick={() => onSiteClick(site)}
               >
                 <TableCell>
-                  <Badge variant={site.siteType === "残土" ? "destructive" : "default"}>
-                    {site.siteType}
+                  <Badge className={site.siteType === "残土" ? "bg-blue-500 text-white" : "bg-red-500 text-white"}
+                    >
+                      {site.siteType}
                   </Badge>
                 </TableCell>
                 <TableCell>{site.siteName}</TableCell>

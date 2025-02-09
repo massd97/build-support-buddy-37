@@ -4,11 +4,9 @@ import { CompanyType, SiteType } from "@/types/site";
 import SiteRegistrationModal from "@/components/SiteRegistrationModal";
 import AvailableSitesList from "@/components/AvailableSitesList";
 import TransactionFeed from "@/components/TransactionFeed";
-import MapSearch from "@/components/MapSearch";
-import ActionButtons from "@/components/ActionButtons";
 import MapContainer from "@/components/MapContainer";
 import MatchingSitesList from "@/components/MatchingSitesList";
-import { fetchSitesFromGAS, searchSitesByAddressGAS } from "@/utils/gas";
+import { fetchSitesFromGAS } from "@/utils/gas";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
@@ -19,7 +17,7 @@ const Index = () => {
   const [showMatchingSites, setShowMatchingSites] = useState(false);
   
   // Map related states
-  const [mapSearch, setMapSearch] = useState("");
+  const [mapKey, setMapKey] = useState(Date.now());
   const [company, setCompany] = useState<CompanyType | "all">("all");
   const [siteType, setSiteType] = useState<SiteType | "all">("all");
   const [minSoilAmount, setMinSoilAmount] = useState("");
@@ -27,12 +25,11 @@ const Index = () => {
   const [sites, setSites] = useState<any[]>([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const geocoderRef = useRef(null);
-  const mapRef = useRef(null);
 
   useEffect(() => {
     const loadSites = async (ids: string[] = []) => {
       try {
+        console.log("Loading sites...");
         setLoading(true);
         const response = await fetchSitesFromGAS(ids);
         setSites(response.sites);
@@ -44,49 +41,49 @@ const Index = () => {
       }
     };
     loadSites();
-  }, []);
+  }, [mapKey]);
 
-  const handleMapSearch = async () => {
-    if (!mapSearch) return;
+  // const handleMapSearch = async () => {
+  //   if (!mapSearch) return;
     
-    try {
-      const geocoder = geocoderRef.current || new window.google.maps.Geocoder();
-      const results = await new Promise((resolve, reject) => {
-        geocoder.geocode({ address: mapSearch }, (results, status) => {
-          if (status === "OK") {
-            resolve(results);
-          } else {
-            reject(new Error("Geocoding failed"));
-          }
-        });
-      });
+  //   try {
+  //     const geocoder = geocoderRef.current || new window.google.maps.Geocoder();
+  //     const results = await new Promise((resolve, reject) => {
+  //       geocoder.geocode({ address: mapSearch }, (results, status) => {
+  //         if (status === "OK") {
+  //           resolve(results);
+  //         } else {
+  //           reject(new Error("Geocoding failed"));
+  //         }
+  //       });
+  //     });
 
-      const firstResult = results[0];
-      const { lat, lng } = firstResult.geometry.location;
+  //     const firstResult = results[0];
+  //     const { lat, lng } = firstResult.geometry.location;
       
-      console.log(`lat: ${lat()}, lng: ${lng()}`);
-      mapRef.current?.panTo({ lat: lat(), lng: lng() });
+  //     console.log(`lat: ${lat()}, lng: ${lng()}`);
+  //     mapRef.current?.panTo({ lat: lat(), lng: lng() });
       
-      new window.google.maps.marker.AdvancedMarkerElement({
-        position: { lat: lat(), lng: lng() },
-        map: mapRef.current,
-        title: mapSearch,
-      });
+  //     new window.google.maps.marker.AdvancedMarkerElement({
+  //       position: { lat: lat(), lng: lng() },
+  //       map: mapRef.current,
+  //       title: mapSearch,
+  //     });
 
-      const searchResponse = await searchSitesByAddressGAS(mapSearch);
-      setSites(searchResponse.sites);
+  //     const searchResponse = await searchSitesByAddressGAS(mapSearch);
+  //     setSites(searchResponse.sites);
       
-      toast.success("検索完了");
-    } catch (error) {
-      console.error("Search error:", error);
-      toast.error("検索中にエラーが発生しました");
-    }
-  };
+  //     toast.success("検索完了");
+  //   } catch (error) {
+  //     console.error("Search error:", error);
+  //     toast.error("検索中にエラーが発生しました");
+  //   }
+  // };
 
   return (
     <div className="min-h-screen pb-20">
       <h1 className="text-2xl font-bold text-center mb-6 text-primary">
-        SoilSync
+        残土マッチ
       </h1>
 
       <div className="max-w-7xl mx-auto px-4">
@@ -101,6 +98,7 @@ const Index = () => {
         </div> */}
 
         <MapContainer 
+          key={mapKey}
           sites={sites}
           company={company}
           setCompany={setCompany}
@@ -114,7 +112,7 @@ const Index = () => {
 
         <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4">
           <Button onClick={() => setShowSiteModal(true)}>
-            新規登録
+            現場新規登録
           </Button>
           <Button onClick={() => setShowSitesList(true)}>
             現場一覧
@@ -131,6 +129,10 @@ const Index = () => {
       <SiteRegistrationModal 
         open={showSiteModal} 
         onOpenChange={setShowSiteModal}
+        onSiteRegistered={() => {
+          setMapKey(Date.now());
+          toast.success("現場が正常に登録されました");
+        }}
       />
       <AvailableSitesList 
         open={showSitesList}

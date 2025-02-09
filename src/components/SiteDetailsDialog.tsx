@@ -43,6 +43,13 @@ interface SiteDetailsDialogProps {
   onTransactionClick: (site: Site) => void; // Update to accept a Site parameter
 }
 
+const formatDate = (isoDate: string): string => {
+  if (!isoDate) return "N/A";
+  const date = new Date(isoDate);
+  if (isNaN(date.getTime())) return "Invalid Date";
+  return date.toISOString().split("T")[0]; // Extracts YYYY-MM-DD
+};
+
 const SiteDetailsDialog = ({ site, open, onOpenChange, onTransactionClick, onEditClick }: SiteDetailsDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -96,11 +103,11 @@ const SiteDetailsDialog = ({ site, open, onOpenChange, onTransactionClick, onEdi
                   </TableRow>
                 <TableRow>
                   <TableCell>現場開始日</TableCell>
-                  <TableCell>{site?.startDate || "未設定"}</TableCell>
+                  <TableCell>{formatDate(site?.startDate) || "未設定"}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>現場終了日</TableCell>
-                  <TableCell>{site?.endDate || "未設定"}</TableCell>
+                  <TableCell>{formatDate(site?.endDate) || "未設定"}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>祷善の用途</TableCell>

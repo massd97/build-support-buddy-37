@@ -1,4 +1,4 @@
-export type CompanyType = "OHD" | "Meldia" | "HawkOne";
+export type CompanyType = "OHD" | "Meldia" | "HO";
 export type SiteType = "残土" | "客土";
 
 export interface Site {

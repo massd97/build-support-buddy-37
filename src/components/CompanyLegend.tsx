@@ -12,7 +12,7 @@ const CompanyLegend = ({ className = "" }: { className?: string }) => {
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded-full border-4 border-yellow-500"></div>
-          <span className="text-sm">HawkOne</span>
+          <span className="text-sm">HO</span>
         </div>
       </div>
     </div>

@@ -43,6 +43,7 @@ const TransactionFeed = ({ open, onOpenChange }: TransactionFeedProps) => {
   const [filteredTransactions, setFilteredTransactions] = useState<any[]>([]); // Filtered data
   const [search, setSearch] = useState(""); // Search input
   const [loading, setLoading] = useState(true); // Loading state
+  const [loadingTransaction, setLoadingTransaction] = useState(false); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
 
   const fetchTransactions = (ids: string[] = []) => {
@@ -86,7 +87,7 @@ const TransactionFeed = ({ open, onOpenChange }: TransactionFeedProps) => {
   // Handle transaction status update (受諾 or 拒否)
   const updateStatus = (transaction: any, status: "受諾" | "拒否") => {
     console.log(`Updating transaction status for transaction:`, transaction);
-  
+    setLoadingTransaction(true);
     const payload = {
       ...transaction, // Include all transaction details
       status,         // Add the updated status
@@ -96,10 +97,12 @@ const TransactionFeed = ({ open, onOpenChange }: TransactionFeedProps) => {
       .withSuccessHandler((response: { success: boolean; message: string }) => {
         console.log("Transaction status update response:", response);
         if (response.success) {
-          alert(`Transaction status updated to ${status}.`);
+          alert(`取引ステータスが更新されました ${status}.`);
           fetchTransactions(); // Refresh transactions after update
+          setLoadingTransaction(false);
         } else {
-          alert("Failed to update transaction status: " + response.message);
+          alert("取引ステータス更新が失敗しました" + response.message);
+          fetchTransactions(); // Refresh transactions after update
         }
       })
       .withFailureHandler((error) => {
@@ -161,11 +164,11 @@ const TransactionFeed = ({ open, onOpenChange }: TransactionFeedProps) => {
                     {transaction.Status === "ペンディング中" ? (
                         transaction.type === "要求" ? (
                           <div className="flex space-x-2">
-                            <Button onClick={() => updateStatus(transaction, "受諾")}>
-                              受諾
+                            <Button disabled={loadingTransaction} onClick={() => updateStatus(transaction, "受諾")}>
+                              {loadingTransaction ? "処理中..." : "受諾"}
                             </Button>
-                            <Button onClick={() => updateStatus(transaction, "拒否")}>
-                              拒否
+                            <Button disabled={loadingTransaction} onClick={() => updateStatus(transaction, "拒否")}>
+                              {loadingTransaction ? "処理中..." : "拒否"}
                             </Button>
                           </div>
                         ) : (

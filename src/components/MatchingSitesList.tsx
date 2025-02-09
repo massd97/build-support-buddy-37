@@ -74,12 +74,14 @@ const MatchingSitesList = ({ open, onOpenChange }: MatchingSitesListProps) => {
         try {
           const decodedString = decodeBase64(compressedResponse);
           const response = JSON.parse(decodedString);
+          console.log("Matches response:", response);
           if (response.success) {
             const enrichedMatches = response.matches.map((match: any) => ({
               mainSite: sitesMap[match.mainSiteID] || {},
               matchedSite: sitesMap[match.matchedSiteID] || {},
               distance: match.Distance,
             }));
+            console.log("Enriched matches:", enrichedMatches);
             setMatches(enrichedMatches);
           } else {
             toast.error(response.message || "Failed to fetch matches");

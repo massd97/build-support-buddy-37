@@ -18,7 +18,7 @@ const CompanySelector = ({ value, onChange }: CompanySelectorProps) => {
         <SelectContent style={{ zIndex: 99999 }}>
           <SelectItem value="OHD">OHD</SelectItem>
           <SelectItem value="Meldia">Meldia</SelectItem>
-          <SelectItem value="HawkOne">HawkOne</SelectItem>
+          <SelectItem value="HO">HO</SelectItem>
         </SelectContent>
       </Select>
     </div>

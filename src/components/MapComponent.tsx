@@ -42,9 +42,9 @@ const MapComponent = ({ sites }: MapComponentProps) => {
     strokeColor: {
       OHD: "#22c55e",
       Meldia: "#a855f7",
-      HawkOne: "yellow",
+      HO: "yellow",
     }[site.company],
-    scale: 15,
+    scale: 10,
   });
 
   const handleMarkerClick = (site: Site) => {
